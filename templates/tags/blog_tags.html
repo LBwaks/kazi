@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% block title%}Turn Up--Blog {% endblock%}
+{% block content %}
+{% load static %}
+{% load tags %}
+{% load humanize %}
+{% load recent_blogs%}
+  <main id="main">
+<br>
+     <!-- ======= Blog Section ======= -->
+     <section class="breadcrumbs">
+       <div class="container">
+
+         <div class="d-flex justify-content-between align-items-center">
+           <h2>Tags</h2>
+
+           <ol>
+             <li><a href="{% url 'home' %}">Home</a></li>
+              <li><a href="{% url 'blogs'%}">Blog</a></li>
+             <li>{{tag_blog}}</li>
+           </ol>
+         </div>
+
+       </div>
+     </section><!-- End Blog Section -->
+
+     <!-- ======= Blog Section ======= -->
+     <section id="blog" class="blog">
+       <div class="container" data-aos="fade-up">
+
+         <div class="row">
+
+           <div class="col-lg-8 entries">
+{% for blog in blogs %}
+             <article class="entry">
+
+               <div class="entry-img">
+                 <img src="{{  blog.photo.url  }}" alt="{{ blog.title|truncatewords:5 }}" height="300" class="img-fluid">
+               </div>
+
+               <h2 class="entry-title">
+                 <a href="{{blog.get_absolute_url}}">{{blog.title}}</a>
+               </h2>
+
+               <div class="entry-meta ">
+                 <ul>
+                   <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a>{{ blog.user.username }}</a></li>
+                   <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a >{{blog.created_date|naturaltime  }}</a></li>
+                   {% if blog.comments.count %}
+                   <li class="d-flex align-items-center"><i class="bi bi-chat-dots"></i> <a >{{ blog.comments.count }}</a></li>
+                    {% else %}
+                     <li class="d-flex align-items-center"><i class="bi bi-chat-dots"></i> </li>
+                                       {% endif %}
+                                       {% if blog.total_likes%}
+       <li class="d-flex align-items-center"><i class="bi bi-heart"></i> <a>{{ blog.total_likes }}</a></li>
+      {% else %}
+      <li class="d-flex align-items-center"><i class="bi bi-heart"></i> </li>
+           {% endif%}
+                 </ul>
+               </div>
+
+               <div class="entry-content">
+                 <p>
+                   {{blog.description | safe|truncatewords:50}}</p>
+                 <div class="read-more">
+                   <a href="{{blog.get_absolute_url}}">Read More</a>
+                 </div>
+               </div>
+
+             </article><!-- End blog entry -->
+
+
+             {% empty %}
+   <div class="col-12 col-sm-12 col-md-12 ">
+     <div class="icon-box text-center">
+     <div class="card m-3 p-3">
+  <div class="card-body">
+    <h5 class="card-title">No Blog Found !</h5>
+    <p class="card-text">Sorry ! No Blog  Has Been Posted !</p>
+    
+  </div>
+</div>
+  
+   </div>
+   </div>
+{% endfor %}
+     {% if blogs %}
+             <div class="blog-pagination">
+                <ul class="justify-content-center">
+                {% if blogs.has_previous %}
+               
+     <li>
+      <a  href="?page={{ blogs.previous_page_number }}">
+        <span >&laquo;</span>
+      </a>
+    </li>    
+    {% endif %}
+
+
+
+    {% for i in blogs.paginator.page_range %}
+             {% if blogs.number == i %}
+                <li class="active"><a href="#">{{i}}</a></li>
+                {% else %}
+                  <li ><a href="?page={{i}}">{{i}}</a></li>
+              {% endif %}
+              {% endfor %}
+
+
+           
+
+{% if blogs.has_next %}
+          
+              <li>
+    <a href="?page={{ blogs.next_page_number }}">&raquo;</a>
+  </li>
+   
+ 
+  {% endif %}
+
+
+
+              </ul>
+             </div>
+{% endif %}
+           </div><!-- End blog entries list -->
+
+           <div class="col-lg-4">
+
+               <div class="sidebar">
+
+
+               
+               <h3 class="sidebar-title">Recent Posts</h3>
+               <div class="sidebar-item recent-posts">
+               {% get_recent_blogs as blogs%}
+               {% for blog in blogs  %}
+                 <div class="post-item clearfix">                  
+                   <h4><a href="{{blog.get_absolute_url}}">{{blog.title|truncatechars:55}}</a></h4>                   
+                 </div>
+                  {% empty %}
+  <div class="post-item clearfix">    
+
+    <h4> No Recent Blogs Found !</h4>
+    </div>
+ 
+                {% endfor%}
+
+                 
+
+               </div><!-- End sidebar recent posts-->
+
+               <h3 class="sidebar-title">Tags</h3>
+               <div class="sidebar-item tags">
+                 <ul>
+                 {% get_all_tags as tags %}
+                 {% for tag in tags %}
+                   <li><a href="{{tag.get_absolute_url}}">{{tag.name}} <span>({{tag.tag_count}})</span></a></li>
+                    {% empty %}
+
+    <li> No Tags Found!</li>
+    
+ 
+                   {% endfor%}
+                 </ul>
+               </div><!-- End sidebar tags-->
+
+             </div><!-- End sidebar -->
+
+           </div><!-- End blog sidebar -->
+
+         </div>
+
+       </div>
+     </section><!-- End Blog Section -->
+
+   </main><!-- End #main -->
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% block title %} Add Jobs{%endblock%}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
+
+<main id="main">
+{% if user.is_authenticated and not user.personal.user_type %}
+<br>
+<div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+  <strong>Hello {{user.username}} !</strong> <a href="{% url 'profile_form' %}">Click Here </a>  To Complete Your Profile.
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+    <!-- ======= Jobs  breadcrumbs Section ======= -->
+<br> 
+    <section class="breadcrumbs">
+    
+      <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Add Jobs</h2>
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'jobs' %}">Jobs</a></li>
+            <li>Add Jobs</li>
+          </ol>
+        </div>
+
+      </div>
+    </section><!-- Job breadcrumbs Section -->
+    <br>
+    <section id="add_job" class="add_job bg-light">
+ <div class="container ">
+
+        <div class="row">
+
+          <div class="col-md-10 mx-auto">
+          <div class="card mb-5 shadow-lg  bg-body rounded">
+  {% comment %} <h5 class="card-header text-center py-4">Add Artist's Event</h5> {% endcomment %}
+  <div class="card-body">
+
+<form method="POST" enctype="multipart/form-data" id="job">
+{% csrf_token %}
+{{ myform.media }}
+ {{ form|crispy}}
+ 
+  {% if user.is_authenticated and  user.personal.user_type == 'seeker' %}
+  
+  <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+  <strong>Hello {{user.username}} !</strong> Job Seekers Cannot Post Jobs .To Post Jobs <a href="{% url 'profile_form' %}">Click Here </a> To Change Type Of User. 
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+  {% else %}
+<div class="d-grid gap-2 col-6 mx-auto">
+  <button class="btn btn-primary" >Submit</button>
+  {% endif %}
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+</section>
+  </main><!-- End #main -->
+  <script type="text/javascript">
+  
+    $.validator.addMethod('filesize', function (value, element, param) {
+      return this.optional(element)||(element.files[0].size <= param * 1000000)
+  }, 'File size must be less than {0}');
+  
+  jQuery(function ($) {
+      "use strict";
+      $('#job').validate({
+          rules: {
+              title : {
+                  required: true,
+                  minlength: 10
+              },
+              description : {
+                required: true,
+                minlength: 30
+            },
+            application_deadline : {
+              required: true,
+              
+          },
+          job_done_date : {
+            required: true,
+            
+        },
+        location : {
+          required: true,
+          minlength: 3
+      },
+      address : {
+        required: true,
+        minlength: 3
+    },
+              image: {
+                  required: false,
+                  extension: "jpg,jpeg,png",
+                  filesize: 5,
+              },
+              video: {
+                required: false,
+                extension: "MKV,MP4,AVI,MOV",
+                filesize: 10,
+            }
+          },
+          messages: {
+            
+            title :{
+              minlength: 'Title Should Contain A Minimum of 10 Characters'
+            },
+            tag : 'This field is required',
+            description :{
+              minlength: 'Description Should Contain 30 Characters'
+            },
+            application_deadline :{
+              minlength: 'Application  Deadline Should Be Greater Than The Current Time ! '
+            },
+            job_done_date :{
+              minlength: 'Time Job To be Done  Should Be Greater Than The Current Time !'
+            },
+            county :'This field is required',
+            location :{
+              minlength: 'Location should contain a minimum of 3 characters'
+            },
+            address:{
+              minlength: 'Address should contain a minimum of 3 characters'
+            },
+            video :{
+              filesize:'File size must be less than 10 mb.',
+              accept:"Please upload MKV,MP4,AVI,MOV file of notice.",
+            },
+            image :{
+              filesize:'File size must be less than 5 mb.',
+              accept:"Please upload .jpg or .png or .jpeg file of notice.",
+            
+          },
+        },
+      });
+  });
+
+</script>
+  {% endblock %}

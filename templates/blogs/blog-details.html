@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% block title%}Blog Details {% endblock %}
+{% block content %}
+{% load humanize %}
+{% load static %}
+{% load tags %}
+{% load recent_blogs%}
+<main id="main">
+<br>
+    <!-- ======= Blog Section ======= -->
+    <section class="breadcrumbs">
+      <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Blogs</h2>
+
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'blogs' %}">Blogs</a></li>
+            <li>Blog Details</li>
+          </ol>
+        </div>
+
+      </div>
+    </section><!-- End Blog Section -->
+
+    <!-- ======= Blog Single Section ======= -->
+    <section id="blog" class="blog">
+      <div class="container" data-aos="fade-up">
+
+        <div class="row">
+
+          <div class="col-lg-8 entries">
+
+            <article class="entry entry-single">
+
+              <div class="entry-img">
+                <img src="{{ blog.photo.url }}" alt="{{ blog.title|truncatewords:5 }}" class="img-fluid">
+              </div>
+
+              <h2 class="entry-title mt-3">
+                <a>{{ blog.title }}</a>
+              </h2>
+
+              <div class="entry-meta">
+                <ul>
+                  <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a>{{ blog.user.username }}</a></li>
+                                    <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a>{{ blog.created_date }}</a></li>
+                  {% comment %} <form action="{% url 'like_blog' blog.slug %}" method = "POST">
+       {% csrf_token%}
+       {% if user.is_authenticated %}
+       {% if liked %}
+       <button type="submit" name="blog_slug" value ="{{blog.slug}}" class="btn btn-sm "> <i class="bi bi-heart text-danger"> {{ total_likes }}</i> </button>
+
+      {% else %}
+        <button type="submit" name="blog_slug" value ="{{blog.slug}}" class="btn btn-sm "><i class="bi bi-heart text-success"> </i> </button>
+           {% endif%}
+           {% else %}
+            <button type="submit" name="blog_slug" value ="{{blog.slug}}" class="btn btn-sm "> <i class="bi bi-heart text-success"> {% if total_likes %} {{ total_likes }} {% endif %}</i> </button>
+
+           {% endif %}
+           
+           </form>
+                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="blog-single.html">{{ blog.created_date }}</a></li>
+                  {% if comments.count %}
+                  <li class="d-flex align-items-center"><i class="bi bi-chat-dots"></i> <a href="%#comments %">{{ comments.count }}</a></li>
+                  {% else %}
+                  <li class="d-flex align-items-center"><a href="#comment"><i class="bi bi-chat-dots"></i> </a></li>
+                  {% endif %} {% endcomment %}
+
+</ul>
+              </div>
+ 
+              <div class="entry-content">
+                <p>
+                 {{blog.description | safe}}</p>
+
+               
+<p> <a href="{% url 'blog_tags' blog.tag.slug %}"><span class="badge rounded-pill bg-success">{{ blog.tag }}</span> </a> </p>
+              </div>
+
+              <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-5">
+
+<!--if user has logged in and owns this job then allow user to delete or edit-->
+
+ {% comment %} {% if user.is_authenticated and  user.id == job.user.id %} {% endcomment %}
+ 
+  <a class="btn btn-outline-info me-md-2" href="{% url 'edit_blog' blog.slug %}">Edit</a>
+   <a class="btn btn-outline-danger me-md-2" href="{% url 'delete_blog' blog.slug %}">Delete</a>
+{% comment %} {% endif %} {% endcomment %}
+              </div>
+            </article><!-- End blog entry -->
+
+           
+
+          
+
+            <div id="comments" class="blog-comments">
+
+               <h4 class="comments-count">{{ blog.blog_comments.count}} Comments</h4>
+ {% if not blog.blog_comments.all %}
+          No comments yet 
+          {% else %}
+          {% for comment in blog.blog_comments.all %}
+         
+             <div id="comment-1" class="comment">
+               <div class="d-flex">
+                 <div class="comment-img">
+                 {% if comment.user.profile.profile_pic.url %}
+                 <img src="{{ comment.user.profile.profile_pic.url }}" alt="{{comment.user.first_name}}" height="35" width="30" class="img-circle">
+                 {% else %}
+                  <img src="{% static 'img/profile/avatar.png' %}" alt="{{comment.user.first_name}}" height="35" width="25" class="img-circle">
+                 {% endif%}
+                 </div>
+                 <div>
+                   <h5><a href="">{{ comment.user.username }}</a> <a href="#" class="reply"><i class="bi bi-reply-fill"></i> Reply</a></h5>
+                   {% comment %} <a href="{% url 'profile_page' artist.user.profile.id %}">Profile Page</a> {% endcomment %}
+                   {{ comment.created_date }}
+                   <p>
+                     {{ comment.body}}
+                   </p>
+                 </div>
+               </div>
+             </div><!-- End comment #1 -->
+
+ {% endfor %}
+          {% endif %}
+
+              <div class="reply-form">
+                <h4>Leave a Reply</h4>
+                 <div class="form-group">
+          <form  id="comment" method="POST">
+          {% csrf_token %}
+          {{ form.as_p }}
+          {{ myform.media }}
+          <button class="btn btn-primary"> Add Comment</button>
+                </div>
+
+              </div>
+
+            </div><!-- End blog comments -->
+
+          </div><!-- End blog entries list -->
+
+          <div class="col-lg-4">
+
+            <div class="sidebar">
+
+ {% if object.get_related_blogs_by_tags %}
+              <h3 class="sidebar-title"><u>Similar Blog </u></h3>
+              <div class="sidebar-item recent-posts">
+               
+                {% for tag in object.get_related_blogs_by_tags %}
+                <div class="post-item clearfix">
+                   <h4><a href="{{tag.get_absolute_url}}">{{tag.title|truncatechars:55}}</a></h4>
+                
+                </div>
+                 {% empty %}
+    <p> No Similar Blog Post!</p>  
+             {% endfor %} 
+                       </div><!-- End sidebar recent posts-->
+{% endif %}
+                       
+<h3 class="sidebar-title"><u>Recent Blogs</u></h3>
+               <div class="sidebar-item recent-posts">
+               {% get_recent_blogs as blogs%}
+               {% for blog in blogs  %}
+                 <div class="post-item clearfix">                  
+                   <h4><a href="{{blog.get_absolute_url}}">{{blog.title|truncatechars:55}}</a></h4>
+                  
+                 </div>
+                  {% empty %}
+    <p> No Recent Blogs Posted !</p>   
+                {% endfor%} 
+                               </div><!-- End sidebar recent posts-->
+                               
+               <h3 class="sidebar-title"><u>Tags</u></h3>
+               <div class="sidebar-item tags">
+                 <ul>
+                 {% get_all_tags as tags %}
+                 {% for tag in tags %}
+                   <li><a href="{{tag.get_absolute_url}}">{{tag.name}} <span>({{tag.tag_count}})</span></a></li>
+                    {% empty %}
+
+    <p> No Tags Found!</p>
+    
+ 
+                   {% endfor%} 
+                 </ul>
+               </div><!-- End sidebar tags-->
+              
+              
+
+             
+             
+
+            </div><!-- End sidebar -->
+
+          </div><!-- End blog sidebar -->
+
+        </div>
+
+      </div>
+    </section><!-- End Blog Single Section -->
+
+  </main><!-- End #main -->
+
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %} Apply This Job {%endblock%}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<main id="main">
+
+    <!-- ======= Jobs  breadcrumbs Section ======= -->
+<br> 
+    <section class="breadcrumbs">
+    
+      <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Applications</h2>
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'jobs' %}">Jobs</a></li>
+            <li>Apply This Job</li>
+
+          </ol>
+        </div>
+
+      </div>
+    </section><!-- Job breadcrumbs Section -->
+<br>
+ <section id="add_job" class="add_job bg-light">
+      <div class="container" data-aos="fade-up">
+{{user.username}}
+        <div class="row">
+
+          <div class="col-md-10 mx-auto">
+          <div class="card shadow-lg  bg-body rounded">
+          <div class="card-body">
+       
+<form method="POST"  action="{% block action_url %} {% url 'apply_job' view.kwargs.job_id %} {% endblock action_url %} " enctype="multipart/form-data">
+{% csrf_token %}
+{{ myform.media }}
+ {{ form|crispy}}
+
+{% if user.is_authenticated and user.personal.user_type == 'recruiter'  %}
+<br>  
+  <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+  <strong>Hello {{user.username}} !</strong>  Job Recruiters Cannot Apply For Jobs .To Apply For Jobs <a href="{% url 'edit_profile' user.personal.profile_uuid  %}">Click Here </a> To Change Type Of User. 
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% else %}
+<div class="d-grid gap-2 col-6 mx-auto">
+  
+  <button class="btn btn-primary" >Submit</button>
+</div>
+{% endif %}
+</form>
+</div>
+          </div>
+</div>
+</div>
+</div>
+</section>
+</main>
+{% endblock %}

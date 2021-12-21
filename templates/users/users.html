@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% block title %} Jobs{%endblock%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+{% load job_tags %}
+{% load recent_jobs %}
+
+<main id="main">
+
+    <!-- ======= Jobs  breadcrumbs Section ======= -->
+<br> 
+    <section class="breadcrumbs">
+    
+      <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>{{jobs_by.username}}'s Jobs</h2>
+          <ol>
+            <li><a href="index.html">Home</a></li>
+             <li><a href="index.html">Jobs</a></li>
+                   <li>{{jobs_by.username}} 's Jobs</li>
+          </ol>
+        </div>
+
+      </div>
+    </section><!-- Job breadcrumbs Section -->
+
+    <!-- ======= About Section ======= -->
+    <section id="blog" class="blog">
+      <div class="container-fluid" data-aos="fade-up">
+
+        <div class="row">
+
+          <div class="col-lg-9">
+          <div class="row d-flex align-items-stretch">
+ {% for job in jobs %}
+ 
+ <div class="col-md-6 col-sm-12">
+ 
+            <article class="entry ">
+            
+              <h2 class="entry-title">
+                <a href="{{job.get_absolute_url}}">{{job.title|truncatechars:55}}</a>
+              </h2>
+
+              <div class="entry-meta">
+                <ul class="d-md-flex justify-content-md-">
+                  <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a >{{job.user.username}}</a></li>
+                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="blog-single.html"><time >{{job.created_date |naturaltime }}</time></a></li>
+              
+                </ul>
+              </div>
+                 
+              <div class="entry-meta">
+                <ul>
+                  <li class="d-flex align-items-center"><i class="bi bi-tags"></i> <a href="{% url 'tags' job.tag.slug %}">{{job.tag }}</a></li>
+                  <li class="d-flex align-items-center"><i class="bi bi-geo-alt"></i> <a href="blog-single.html"><time > {{job.county}} ,{{job.location}}</time></a></li>
+              
+                </ul>
+              </div>
+
+            </article><!-- End blog entry -->
+              </div>
+            
+  {% empty %}
+   <div class="col-12 col-sm-12 col-md-12 ">
+     <div class="icon-box text-center">
+     <div class="card m-3 p-3 shadow-lg p-3 mb-5 bg-body rounded">
+  <div class="card-body">
+    <h5 class="card-title">{{jobs_by.username}} Has No Job Posted !</h5>
+    <p class="card-text">Sorry ! {{jobs_by.username}} Has Not Yet Posted Any Job !</p>
+    <a href="{% url 'add_job' %}" class="btn btn-primary">Add Job</a>
+  </div>
+</div>
+   
+
+   </div>
+   </div>
+            
+{% endfor %}
+</div>
+           
+
+           {% if jobs %} <!---- check if there are object for pagination-->
+            <div class="blog-pagination">
+              <ul class="justify-content-center">
+              {% if jobs.has_previous %}
+                  <li>
+      <a  href="?page={{ jobs.previous_page_number }}">
+        <span >&laquo;</span>
+      </a>
+    </li>    
+    {% endif %}
+
+                  {% for i in jobs.paginator.page_range %}
+             {% if jobs.number == i %}
+                <li class="active"><a href="#">{{i}}</a></li>
+                {% else %}
+                  <li ><a href="?page={{i}}">{{i}}</a></li>
+              {% endif %}
+              {% endfor %}
+              {% if jobs.has_next %}          
+              <li>
+    <a href="?page={{ jobs.next_page_number }}">&raquo;</a>
+  </li> 
+  {% endif %}
+              </ul>
+              <br>
+            </div>
+
+            {% endif %}
+
+          </div><!-- End blog entries list -->
+
+          <div class="col-lg-3">
+
+            <div class="sidebar">
+
+             {% include 'includes/search.html'%}
+
+              
+
+              <h3 class="sidebar-title">Recent Jobs</h3>
+              <div class="sidebar-item recent-posts">
+              {%recent_jobs as jobs %}
+              {% for job in jobs %}
+                <div class="post-item clearfix">
+                 
+                  <h4 class="pt-2"><a href="{{job.get_absolute_url}}">{{job.title|truncatechars:55}}</a></h4>
+                  
+                </div>
+
+                {% empty %}
+                <div class="post-item clearfix">
+                 
+                  <h4 class="pt-2">No Recent Job Found !</h4>
+                  
+                </div>
+                {% endfor %}
+               
+
+              </div><!-- End sidebar recent posts-->
+
+              <h3 class="sidebar-title">Tags</h3>
+              <div class="sidebar-item tags">
+              {% get_tags as tags %}
+                <ul> 
+                {% for tag in tags%}
+                  <li><a href="{{tag.get_absolute_url}}">{{tag.name}}</a></li>
+                  {% empty %}
+                  <li>No Tag Found !</li>
+                  {% endfor%}
+                 
+                </ul>
+                
+              </div><!-- End sidebar tags-->
+
+            </div><!-- End sidebar -->
+
+          </div><!-- End blog sidebar -->
+
+        </div>
+
+      </div>
+    </section><!-- End Blog Section -->
+
+    
+  </main><!-- End #main -->
+  
+{% endblock %}

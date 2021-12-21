@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title%} Edit Blog {% endblock%}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
+
+  <main id="main">
+<br>
+     <!-- ======= Blog Section ======= -->
+     <section class="breadcrumbs">
+       <div class="container">
+
+         <div class="d-flex justify-content-between align-items-center">
+           <h2>Edit Blog</h2>
+
+           <ol>
+             <li><a href="{% url 'home' %}">Home</a></li>
+             <li><a href="{% url 'blogs' %}">Blogs</a></li>
+             <li>Blog</li>
+           </ol>
+         </div>
+
+       </div>
+     </section><!-- End Blog Section -->
+<br>
+     <!-- ======= Blog Section ======= -->
+     <section id="add_job" class="add_job bg-light">
+ <div class="container ">
+
+        <div class="row">
+
+          <div class="col-md-10 mx-auto">
+          <div class="card mb-5 shadow-lg  bg-body rounded">
+  {% comment %} <h5 class="card-header text-center py-4">Add Artist's Event</h5> {% endcomment %}
+  <div class="card-body">
+
+<form method="POST" enctype="multipart/form-data" id="edit_blog">
+{% csrf_token %}
+{{ myform.media }}
+ {{ form|crispy}}
+ 
+ 
+<div class="d-grid gap-2 col-6 mx-auto">
+  <button class="btn btn-primary" >Submit</button>
+  
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+</section>
+
+   </main><!-- End #main -->
+   <script type="text/javascript">
+  
+    $.validator.addMethod('filesize', function (value, element, param) {
+      return this.optional(element)||(element.files[0].size <= param * 1000000)
+  }, 'File size must be less than {0}');
+  
+  jQuery(function ($) {
+      "use strict";
+      $('#edit_blog').validate({
+          rules: {
+              title : {
+                  required: true,
+                  minlength: 10
+              },
+              description : {
+                required: true,
+                minlength: 30
+            },
+              photo: {
+                  required: true,
+                  extension: "jpg,jpeg",
+                  filesize: 5,
+              }
+          },
+          messages: {
+            photo :{
+                filesize:'File size must be less than 5 mb.',
+                accept:"Please upload .jpg or .png or .jpeg file of notice.",
+              
+            },
+            title :{
+              minlength: 'Title Should Contain A Minimum of 10 Characters'
+            },
+            description :{
+              minlength: 'Description Should Contain 30 Characters'
+            },
+        },
+      });
+  });
+
+</script>
+{% endblock %}

@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% block title %} Job-Details{%endblock%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load job_tags %}
+{% load recent_jobs %}
+<main id="main">
+{% if user.is_authenticated and not user.personal.user_type %}
+<br>
+<div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+  <strong>Hello {{user.username}} !</strong> <a href="{% url 'profile_form' %}">Click Here </a>  To Complete Your Profile.
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+
+{% include 'includes/messages.html'%}
+    <!-- ======= Jobs  breadcrumbs Section ======= -->
+<br> 
+    <section class="breadcrumbs">
+    
+      <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Job Details</h2>
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+             <li><a href="{% url 'jobs' %}">Jobs</a></li>
+            <li>Jobs Details</li> 
+          </ol>
+        </div>
+
+      </div>
+    </section><!-- Job breadcrumbs Section -->
+
+    <section id="blog" class="blog">
+      <div class="container" data-aos="fade-up">
+{{job.id}} lllllllllllllllll
+        <div class="row">
+
+          <div class="col-lg-8 entries">
+
+            <article class="entry entry-single">
+
+              <div class="entry-img">
+                <img src="{{job.image.url}}" alt="{{job.title|truncatechars:10}}" class="img-fluid" height="250">
+              </div>
+
+              <h2 class="entry-title mt-3">
+                <a >{{job.title}}</a>
+              </h2>
+
+              <div class="entry-meta">
+                <ul>
+                  <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a href="{% url 'jobs_by' job.user.username %}">{{job.user.username}}</a></li>
+                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a><time>{{job.created_date }}</time></a></li>
+                  <li class="d-flex align-items-center">  <a href="{% url 'this_job_applications' job.slug %}"><span class="badge rounded-pill bg-info text-dark"> {{job.applications.count}}</span>  Applications</a></li>
+                </ul>
+              </div>
+
+              <div class="entry-content">
+              <div class="card mt-2 shadow  mb-5 bg-body rounded ">
+  <div class="card-body">
+              <h6><u>Job Description</u> </h6> <p>   {{job.description | safe}} </p>
+              </div>
+              </div>
+                {% comment %} <h6><u>Description :</u> </h6> <p>   {{artist.event_description | safe}} </p> {% endcomment %}
+                <div class="card mt-2 shadow  mb-5 bg-body rounded ">
+  <div class="card-body">
+                <h6><u>Job Tag</u> </h6> <p>  <span class="badge rounded-pill bg-primary"> <a class="link-light" href="{% url 'tags' job.tag.slug %}">{{job.tag}}</a> </span>  </p>
+                </div>
+              </div>
+                <div class="card mt-2 shadow  mb-5 bg-body rounded ">
+  <div class="card-body">
+                <h6><u>Application Deadline </u> </h6> <p>   {{job.application_deadline}} </p>
+                <h6><u>Job To Be Complete At </u> </h6> <p>   {{job.job_done_date}} </p>
+                </div>
+              </div>
+
+                <div class="card mt-2 shadow  mb-5 bg-body rounded ">
+  <div class="card-body">
+                <h6><u>Job Location </u> </h6> <p>   {{job.county}} ,  {{job.location}}</p>
+               
+                <h6><u> Job Address </u> </h6> <p>   {{job.address}} </p>
+                
+                </div>
+              </div>
+                <div class="card mt-2 shadow  mb-5 bg-body rounded ">
+  <div class="card-body">
+                <h6><u>Reference No </u> </h6> <p>   #{{job.id}} </p>
+                
+                </div>
+              </div>
+              {% if job.video %}
+               <div class="card mt-2 shadow  mb-5 bg-body rounded ">
+  <div class="card-body">
+  <h6><u>Job Video </u> </h6> 
+              <div class="ratio ratio-16x9">
+  <video  controls>
+  <source src="{{job.video.url}}" type="video/mp4">
+  <source src="{{job.video.url}}" type="video/ogg">
+  <source src="{{job.video.url}}" type="video/webm">
+
+</video>
+</div>
+</div>
+              </div>
+              {% endif %}
+              
+              <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+
+<!--if user has logged in and owns this job then allow user to delete or edit-->
+
+ {% if user.is_authenticated and  user.id == job.user.id %}
+  <a class="btn btn-outline-info me-md-2" href="{% url 'update_job' job.slug %}">Edit</a>
+   <a class="btn btn-outline-danger me-md-2" href="{% url 'delete_job' job.slug %}">Delete</a>
+{% endif %}
+
+<!-- end if user has logged in and owns this job then allow user to delete or edit-->
+
+<!-- if user is a seeker and does not own this job and status of job is not approved or done allow him to apply-->
+
+   {% if not user.is_authenticated %}
+  <a href="{% url 'apply_job' job.id %}" class="btn btn-outline-primary" >Apply</a>
+  
+
+  {% elif user.is_authenticated and user.personal.user_type == 'seeker' and user.id != job.user.id       and job.status != 'Approved' and job.status != 'Done' %}
+  <a href="{% url 'apply_job' job.id %}" class="btn btn-outline-primary" >Apply</a>
+  {% endif %}
+
+<!-- end if user is a seeker and does not own this job and status of job is not approved or done allow him to apply-->
+
+<!-- show only when status is approved or done -->
+{% if job.status == 'Approved' %}
+
+<a class="btn btn-secondary me-md-2" href="{% url 'this_job_applications' job.slug %}">Has An Approved Application </a>
+
+{% elif job.status == 'Done' %}
+
+<a class="btn btn-secondary me-md-2" href="{% url 'this_job_applications' job.slug %}">Done Job </a>
+<!-- end show only when status is approved or done -->
+
+{% else %}
+
+<!-- show number of application to owner-->
+{% if user.is_authenticated and  user.id == job.user.id %}
+
+<a class="btn btn-outline-primary me-md-2" href="{% url 'this_job_applications' job.slug %}">View Applications <span class="badge rounded-pill bg-info text-dark">{{job.applications.count}}</span></a>
+
+{% endif%}
+
+
+<!-- end show number of applicatio to owner-->
+</div>
+{% endif%}
+
+
+<!-- if logged in user has not created profile-->
+ {% if user.is_authenticated and not user.personal.user_type %}
+  
+  <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+  <strong>Hello {{user.username}} !</strong>To  Apply This Job  Complete Your Profile First.<a href="{% url 'profile_form' %}" >Complete Profile </a>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<!-- end if logged in user has not created profile-->
+
+  {% elif user.is_authenticated and user.personal.user_type == 'recruiter' and user.id != job.user.id and job.status != 'Done' %}
+  <br>  
+  <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+  <strong>Hello {{user.username}} !</strong>  Job Recruiters Cannot Apply For Jobs .To Apply For Jobs <a href="{% url 'edit_profile' user.personal.profile_uuid  %}">Click Here </a> To Change Type Of User. 
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+
+  {% endif%}
+              </div>
+
+            
+            </article>
+           
+
+          </div><!-- End blog entries list -->
+
+          <div class="col-lg-4">
+
+            <div class="sidebar">
+
+             {% include 'includes/search.html'%}
+            
+
+             <h3 class="sidebar-title">Similar Jobs</h3>
+              <div class="sidebar-item recent-posts">
+              {% comment %} {% get_related_job_by_tag as jobs %} {% endcomment %}
+              {% for job in object.get_related_job_by_tag %}
+                <div class="post-item clearfix">
+                 
+                  <h4 class="pt-2"><a href="{{job.get_absolute_url}}">{{job.title|truncatechars:55}}</a></h4>
+                  
+                </div>
+                {% empty %}
+                <div class="post-item clearfix">
+                 
+                  <h4 class="pt-2">No Similar Jobs Found !</h4>
+                  
+                </div>
+                {% endfor %}
+               
+
+              </div><!-- End sidebar recent posts-->
+
+              <h3 class="sidebar-title">Tags</h3>
+              <div class="sidebar-item tags">
+              {% get_tags as tags %}
+                <ul> 
+                {% for tag in tags%}
+                  <li><a href="{{tag.get_absolute_url}}">{{tag.name}}</a></li>
+                  {% endfor%}
+                 
+                </ul>
+                
+              </div><!-- End sidebar tags-->
+            </div><!-- End sidebar -->
+
+          </div><!-- End blog sidebar -->
+
+        </div>
+
+      </div>
+    </section><!-- End Blog Single Section -->
+
+    </main>
+
+{% endblock %}

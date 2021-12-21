@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %} Search Results {%endblock%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+{% comment %} {% load crispy_forms_tags %} {% endcomment %}
+
+<main id="main">
+
+    <!-- ======= Jobs  breadcrumbs Section ======= -->
+<br> 
+
+    <section class="breadcrumbs ">
+    
+      <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <h2></h2>
+          <ol>
+            {% comment %} <li><a href="index.html">Home</a></li> {% endcomment %}
+             {% comment %} <li><a href="index.html">Jobs</a></li> {% endcomment %}
+            {% comment %} <li>Job Applications</li> {% endcomment %}
+            {% if q %}
+<p> {% with query.count as total_results %} 
+<span class="text-danger">{{total_results}} </span>Job{{total_results|pluralize}} Found 
+{% endwith%}
+</p>
+{% endif%}
+          </ol>
+        </div>
+
+      </div>
+    </section><!-- Job breadcrumbs Section -->
+ 
+   
+
+<section id="blog" class="blog">
+      <div class="container-fluid" data-aos="fade-up">
+
+        <div class="row">
+
+          <div class="col-lg-10 mx-auto">
+          <div class="row d-flex align-items-stretch">
+          <h4 class="mb-2"> <u> Search Results For <span class="text-danger">{{q}}</span> </u> </h4>
+ {% for job in results %}
+ 
+ <div class="col-md-6 col-lg-6 col-xl-6 col-sm-12">
+ 
+            <article class="entry ">
+            
+              <h2 class="entry-title">
+                <a href="{{job.get_absolute_url}}">{{job.title|truncatechars:55}}</a>
+              </h2>
+
+              <div class="entry-meta">
+                <ul>
+                  <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a href="{% url 'jobs_by' job.user.username %}">{{job.user.username}}</a></li>
+                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="blog-single.html"><time >{{job.created_date |naturaltime }}</time></a></li>
+              
+                </ul>
+              </div>
+                 
+              <div class="entry-meta">
+                <ul>
+                  <li class="d-flex align-items-center"><i class="bi bi-tags"></i> <a href="{% url 'tags' job.tag.slug %}">{{job.tag }}</a></li>
+                  <li class="d-flex align-items-center"><i class="bi bi-geo-alt"></i> <a href="blog-single.html"><time > {{job.county}} ,{{job.location}}</time></a></li>
+              
+                </ul>
+              </div>
+
+            </article><!-- End blog entry -->
+              </div>
+
+               {% empty %}
+   <div class="col-12 col-sm-12 col-md-12 ">
+     <div class="icon-box text-center">
+     <div class="card m-3 p-3 shadow-lg p-3 mb-5 bg-body rounded">
+  <div class="card-body">
+    <h5 class="card-title">No Jobs with keyword <span class="text-danger">{{q}}</span> </h5>
+   
+  </div>
+</div>
+   
+
+   </div>
+   </div>
+            
+ 
+{% endfor %}
+</div>
+           
+{% if results %} <!---- check if there are object for pagination-->
+            <div class="blog-pagination">
+              <ul class="justify-content-center">
+              {% if results.has_previous %}
+                  <li>
+      <a  href="?page={{ results.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+        <span >&laquo;</span>
+      </a>
+    </li>    
+    {% endif %}
+
+                  {% for i in results.paginator.page_range %}
+             {% if results.number == i %}
+                <li class="active"><a href="#">{{i}}</a></li>
+                {% else %}
+                  <li ><a href="?page={{i}}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{i}}</a></li>
+              {% endif %}
+              {% endfor %}
+              {% if results.has_next %}          
+              <li>
+    <a href="?page={{ results.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&raquo;</a>
+  </li> 
+  {% endif %}
+              </ul>
+              <br>
+            </div>
+
+            {% endif %}
+
+          </div><!-- End blog entries list -->
+          </div>
+          </div>
+          </section>
+           </main>
+
+{% endblock %}

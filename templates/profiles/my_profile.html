@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% block title%} My Profile {% endblock %}
+{% block content %}
+{% load humanize %}
+{% load static %}
+<main id="main">
+  <br>
+  <section class="breadcrumbs">
+    <div class="container">
+
+      <div class="d-flex justify-content-between align-items-center">
+        <h2>My Profile </h2>
+        <ol>
+          <li><a href="{% url 'home' %}">Home</a></li>
+         
+            <li>{{ user.first_name }}
+{{ user.last_name }}</li>
+        </ol>
+      </div>
+
+    </div>
+  </section>
+  
+  <section id="artists" class="artists">
+     <div class="container" data-aos="fade-up">
+
+        <div class="card">
+  <div class="card-body">
+<div class="container">
+<div class="row">
+<div class="col-md-4 col-lg-4 col-sm-12 "> 
+<div class="card border-secondary mb-3" style="max-width: 19rem;">
+  <div class="card-body">
+  <h5 class="card-title text-center "> <u>Personal Info </u></h5>
+
+  <div class="personal-pic mb-4 mx-auto d-flex justify-content-center">
+  
+  <img src="{{user.personal.profile_pic.url }}" alt="{{ user.username }}" width="150" height="150" class="rounded-circle">
+  
+  </div>  
+ 
+
+
+<p> <span class="fw-bold"> Username :</span> <span class="text-muted fw-lighter">{{ user.username }}</span></p>
+<hr>
+  <p> <span class="fw-bold">Name :</span> <span class="text-muted fw-lighter">{{ user.first_name }} {{ user.last_name }} </span></p>
+  <hr>  
+
+<p> <span class="fw-bold">Email :</span> <span class="text-muted fw-lighter">{{user.email}}</span></p>
+<hr>
+<p> <span class="fw-bold">ID / Passport No :</span> <span class="text-muted fw-lighter">{{user.personal.id_passport}}</span></p>
+<hr>
+
+<p> <span class="fw-bold">Gender :</span> <span class="text-muted fw-lighter">{{user.personal.gender}}</span></p>
+<hr>
+<p> <span class="fw-bold">Tell :</span> <span class="text-muted fw-lighter">{{user.personal.phone_number}}</span></p>
+ 
+
+<p> <span class="fw-bold">Address :</span> <span class="text-muted fw-lighter">{{user.personal.county}}, {{user.personal.town}},{{user.personal.location}}</span></p>
+  <hr>
+  <p> <span class="fw-bold">Bio :</span> <span class="text-muted fw-lighter">{{user.personal.bio |safe}} </span></p>
+ <div class="text-center">
+  <a class="btn btn-info" href="{% url 'edit_profile' user.personal.profile_uuid  %}">Edit Profile Info</a>
+ </div>
+  </div>
+</div>
+
+<div class="card border-secondary mb-3" style="max-width: 19rem;">
+  <div class="card-body">
+  <h5 class="card-title text-center "> <u>Account Info </u></h5>
+  <div class="d-grid gap-2">
+ 
+  <a href="{% url 'update_account' user.personal.profile_uuid  %}" class="btn btn-primary">Change Account Info</a>
+ 
+  <a href="{% url 'account_password_change'%}" class="btn btn-info">Change Password </a>
+</div>
+  </div>
+  </div>
+ </div>
+<div class="col-md-8 col-lg-8 col-sm-12">
+<div class="card">
+  <div class="card-header">
+   <nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <button class="nav-link active" id="nav-artists-tab" data-bs-toggle="tab" data-bs-target="#nav-artists" type="button" role="tab" aria-controls="nav-artists" aria-selected="true">Other Info</button>
+    </div>
+</nav>
+  </div>
+  <div class="card-body">
+  <div class="tab-content" id="nav-tabContent">
+  <div class="tab-pane fade show active" id="nav-artists" role="tabpanel" aria-labelledby="nav-artists-tab">
+  
+  <div class="card  mb-3">
+  <div class="card-body">
+
+<p> <span class="fw-bold"> Type Of User:</span> <span class="text-muted fw-lighter"> {% if user.personal.user_type == 'seeker' %} Job Seeker {% elif  user.personal.user_type == 'recruiter' %} Job Recruiter{% endif %}</span></p>
+
+  </div>
+</div>
+  {% if user.personal.user_type == 'seeker'  %}
+  <div class="card  mb-3">
+  <div class="card-body">
+
+<p> <span class="fw-bold"> Skills:</span> <span class="text-muted fw-lighter"> <span class="badge bg-secondary">{{ user.personal.skills }}</span> </span></p>
+
+  </div>
+</div>
+{% endif %}
+
+{% if user.personal.cv %}
+<div class="card  mb-3">
+  <div class="card-body">
+
+<p> <span class="fw-bold">Curriculum Vitae :</span> <span class="text-muted fw-lighter"><a href="{{ user.personal.cv.url }}" class="btn btn-info" target="_blank"> View Your Cv</a>  </span></p>
+<br>
+
+  </div>
+  </div>
+  {% endif%}
+</div>
+
+{% if user.personal.id_front or user.personal.id_back %}
+<div class="card  mb-3">
+  <div class="card-body">
+<p> <span class="fw-bold"> ID / Passport Images :</span> </p>
+ <div class="personal-pic mb-4 mx-auto d-flex justify-content-center">
+ {% if user.personal.id_front %}
+  <img src="{{user.personal.id_front.url }}" alt="{{ user.username }}" width="200" height="150" class="rounded float-between">
+  {% endif %}
+
+ <div class="personal-pic mb-4 mx-auto d-flex justify-content-center">
+ {% if user.personal.id_back %}
+  <img src="{{user.personal.id_back.url }}" alt="{{ user.username }}" width="200" height="150" class="rounded float-between">
+   {% endif %}
+  </div>
+
+  </div>
+</div>
+  </div>
+{% endif %}
+
+</div>
+  
+  </div>
+  
+
+ 
+  
+</div>
+</div>
+
+</div>
+</div>
+
+    
+  </div>
+</div> 
+
+
+
+{% comment %} {{user.personal.type_of_user}}
+<br>
+
+
+ {% endcomment %}
+
+
+
+
+        
+
+     </div>
+   </section><!-- End artists Single Section -->
+
+</main>
+
+
+{% endblock %}

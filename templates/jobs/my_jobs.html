@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+{% block title %}My Jobs{%endblock%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% comment %} {% load crispy_forms_tags %} {% endcomment %}
+
+<main id="main">
+
+    <!-- ======= Jobs  breadcrumbs Section ======= -->
+<br> 
+    <section class="breadcrumbs">
+    
+      <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>My Jobs</h2>
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li>My Jobs</li>
+          </ol>
+        </div>
+
+      </div>
+    </section><!-- Job breadcrumbs Section -->
+{% include 'includes/job_messages.html'%}
+
+{% if messages %}
+
+{% for message in messages %}
+<div id="messages" class="container pt-4 text-center">
+<br>
+{% comment %} <br> {% endcomment %}
+  <div class="alert alert-{{message.tags}}" alert-dismissable role="alert">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <strong>
+{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+  Error:
+{% comment %} {% else %} {% endcomment %}
+  {% comment %} {{message.tags|title}} {% endcomment %}
+{% endif %}
+    </strong>
+    {{message}}
+  </div>
+
+</div>
+{% endfor %}
+{% endif %}
+
+    <!-- ======= About Section ======= -->
+    <section id="blog" class="blog" style="min-height:70vh;">
+      <div class="container" data-aos="fade-up">
+
+        <div class="row">
+
+          <div class="col-lg-10 mx-auto">
+          
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <button class="nav-link active" id="approved_jobs-tab" data-bs-toggle="tab" 
+    data-bs-target="#approved_jobs" type="button" role="tab" aria-controls="approved_jobs" aria-selected="true">Approved </button>
+
+    <button class="nav-link" id="waiting_jobs-tab" data-bs-toggle="tab" data-bs-target="#waiting_jobs" 
+    type="button" role="tab" aria-controls="waiting_jobs" aria-selected="false">Waiting </button>
+
+    <button class="nav-link" id="done_jobs-tab" data-bs-toggle="tab" data-bs-target="#done_jobs"
+     type="button" role="tab" aria-controls="done_jobs" aria-selected="false">Done </button>
+
+  <button class="nav-link" id="never_applied_jobs-tab" data-bs-toggle="tab" data-bs-target="#never_applied_jobs" type="button"
+   role="tab" aria-controls="never_applied_jobs" aria-selected="false">Never Applied </button>
+
+
+
+  </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+
+
+
+<!-- start of approved Jobs-->
+  <div class="tab-pane fade show active " id="approved_jobs" role="tabpanel" aria-labelledby="approved_jobs">
+<div class="container">
+ <div class="row d-flex align-items-stretch">
+ <h5 class=" m-3"><u>Jobs With Approved Applications</u></h5>
+ {% for approved_job in approved_jobs %}
+ 
+ <div class="col-md-6 col-sm-12">
+ 
+            <article class="entry ">
+            
+              <h2 class="entry-title">
+                <a href="{{approved_job.get_absolute_url}}">{{approved_job.title|truncatechars:55}}</a>
+              </h2>
+
+              <div class="entry-meta ">
+                <ul>
+                  <li class="d-flex align-items-center ml-3"><i class="bi bi-person"></i> <a>{{approved_job.user.username}}</a></li>
+                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a><time >{{approved_job.created_date |naturaltime }}</time></a></li>
+              
+                </ul>
+              </div>
+                 
+              <div class="entry-meta">
+                <ul>
+                  <li class="d-flex align-items-center ml-3"><i class="bi bi-tags"></i> <a href="{% url 'tags' approved_job.tag.slug %}">{{approved_job.tag }}</a></li>
+                  <li class="d-flex align-items-center"><i class="bi bi-geo-alt"></i> <a> {{approved_job.county}} ,{{approved_job.location}}</time></a></li>
+              
+                </ul>
+              </div>
+<div class="d-grid gap-2 d-md-flex justify-content-md-between">
+              <a class="btn btn-outline-secondary me-md-2" href="{% url 'this_job_applications' approved_job.slug %}"> Has Approved Applications </a>
+
+</div>
+            </article><!-- End blog entry -->
+              </div>
+            
+  {% empty %}
+   <div class="col-12 col-sm-12 col-md-12 ">
+     <div class="icon-box text-center">
+     <div class="card m-3 p-3 shadow-lg p-3 mb-5 bg-body rounded">
+  <div class="card-body">
+   
+    <p class="card-text">You Have No Jobs With Approved Application!</p>
+    
+  </div>
+</div>
+   
+
+   </div>
+   </div>
+{% endfor %}
+</div>
+</div>
+</div>
+
+
+<!-- end of approved jobs-->
+<!-- start of waiting Jobs-->
+
+  <div class="tab-pane fade" id="waiting_jobs" role="tabpanel" aria-labelledby="waiting_jobs-tab">
+
+<div class="container">
+ <div class="row d-flex align-items-stretch">
+ <h5 class="m-3"><u>Jobs With No Applications Or With Applications Waiting Approval</u></h5>
+ {% for waiting_job in waiting_jobs %}
+ 
+ <div class="col-md-6 col-sm-12">
+ 
+            <article class="entry ">
+            
+              <h2 class="entry-title">
+                <a href="{{waiting_job.get_absolute_url}}">{{waiting_job.title|truncatechars:55}}</a>
+              </h2>
+
+              <div class="entry-meta">
+                <ul>
+                  <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a>{{waiting_job.user.username}}</a></li>
+                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a><time >{{waiting_job.created_date |naturaltime }}</time></a></li>
+              
+                </ul>
+              </div>
+                 
+              <div class="entry-meta">
+                <ul>
+                  <li class="d-flex align-items-center"><i class="bi bi-tags"></i> <a href="{% url 'tags' waiting_job.tag.slug %}">{{waiting_job.tag }}</a></li>
+                  <li class="d-flex align-items-center"><i class="bi bi-geo-alt"></i> <a> {{waiting_job.county}} ,{{waiting_job.location}} </a></li>
+              
+                </ul>
+              </div>
+              <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+              <a class="btn btn-outline-primary me-md-2" href="{% url 'this_job_applications' waiting_job.slug %}"> <span class="badge rounded-pill bg-secondary ">{{waiting_job.applications.count}} </span>  View  Applications </a>
+
+ 
+</div>
+
+            </article><!-- End blog entry -->
+              </div>
+            {% empty %}
+   <div class="col-12 col-sm-12 col-md-12 ">
+     <div class="icon-box text-center">
+     <div class="card m-3 p-3 shadow-lg p-3 mb-5 bg-body rounded">
+  <div class="card-body">
+   
+    <p class="card-text">You Have No Jobs Applications Waiting For Approval !</p>
+    
+  </div>
+</div>
+   
+
+   </div>
+   </div>
+ 
+{% endfor %}
+</div>
+</div>
+</div>
+
+
+<!-- end of waiting jobs-->
+<!-- start of done Jobs-->
+  <div class="tab-pane fade" id="done_jobs" role="tabpanel" aria-labelledby="done_jobs-tab">
+  
+ 
+<div class="container">
+ <div class="row d-flex align-items-stretch">
+ <h5 class="m-3"><u>Jobs Done</u></h5>
+ {% for done_job in done_jobs %}
+ 
+ <div class="col-md-6 col-sm-12">
+ 
+            <article class="entry ">
+            
+              <h2 class="entry-title">
+                <a href="{{done_job.get_absolute_url}}">{{done_job.title|truncatechars:55}}</a>
+              </h2>
+
+              <div class="entry-meta">
+                <ul>
+                  <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a>{{done_job.user.username}}</a></li>
+                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a><time >{{done_job.created_date |naturaltime }}</time></a></li>
+              
+                </ul>
+              </div>
+                 
+              <div class="entry-meta">
+                <ul>
+                  <li class="d-flex align-items-center"><i class="bi bi-tags"></i> <a href="{% url 'tags' done_job.tag.slug %}">{{done_job.tag }}</a></li>
+                  <li class="d-flex align-items-center"><i class="bi bi-geo-alt"></i> <a> {{done_job.county}} ,{{done_job.location}} </a></li>
+              
+                </ul>
+              </div>
+<div class="d-grid gap-2 d-md-flex justify-content-md-between">
+              <a class="btn btn-outline-dark me-md-2" href="{% url 'this_job_applications' done_job.slug %}">  Done Job </a>
+
+</div>
+            </article><!-- End blog entry -->
+              </div>
+            
+ {% empty %}
+   <div class="col-12 col-sm-12 col-md-12 ">
+     <div class="icon-box text-center">
+     <div class="card m-3 p-3 shadow-lg p-3 mb-5 bg-body rounded">
+  <div class="card-body">
+   
+    <p class="card-text">You Have No Completed Jobs !</p>
+    
+  </div>
+</div>
+   
+
+   </div>
+   </div>
+{% endfor %}
+</div>
+</div>
+</div>
+
+<!-- end of done jobs-->
+<!-- start of never applied Jobs-->
+<div class="tab-pane fade" id="never_applied_jobs" role="tabpanel" aria-labelledby="never_applied_jobs-tab">
+
+
+<div class="container">
+ <div class="row d-flex align-items-stretch">
+  <h5 class="m-3"><u>Jobs Never Applied</u></h5>
+ {% for never_applied_job in never_applied_jobs %}
+ 
+ <div class="col-md-6 col-sm-12">
+ 
+            <article class="entry ">
+            
+              <h2 class="entry-title">
+                <a href="{{never_applied_job.get_absolute_url}}">{{never_applied_job.title|truncatechars:55}}</a>
+              </h2>
+
+              <div class="entry-meta">
+                <ul>
+                  <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a>{{never_applied_job.user.username}}</a></li>
+                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a><time >{{never_applied_job.created_date |naturaltime }}</time></a></li>
+              
+                </ul>
+              </div>
+                 
+              <div class="entry-meta">
+                <ul>
+                  <li class="d-flex align-items-center"><i class="bi bi-tags"></i> <a href="{% url 'tags' never_applied_job.tag.slug %}">{{never_applied_job.tag }}</a></li>
+                  <li class="d-flex align-items-center"><i class="bi bi-geo-alt"></i> <a> {{never_applied_job.county}} ,{{never_applied_job.location}}</a></li>
+              
+                </ul>
+              </div>
+
+            </article><!-- End blog entry -->
+              </div>
+            
+ {% empty %}
+   <div class="col-12 col-sm-12 col-md-12 ">
+     <div class="icon-box text-center">
+     <div class="card m-3 p-3 shadow-lg p-3 mb-5 bg-body rounded">
+  <div class="card-body">
+   
+    <p class="card-text">All Jobs Have Been Applied !</p>
+    
+  </div>
+</div>
+   
+
+   </div>
+   </div>
+{% endfor %}
+</div>
+</div>
+
+</div>
+
+
+<!-- end of never applied Jobs-->
+</div>
+
+
+          </div><!-- End blog entries list -->
+
+          
+        </div>
+
+      </div>
+    </section><!-- End Blog Section -->
+
+   
+  </main><!-- End #main -->
+  
+{% endblock %}

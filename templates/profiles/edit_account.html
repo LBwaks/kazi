@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %} Edit Account {% endblock %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% block content %}
+
+<main id="main"  class="d-flex justify-content-center align-items-center align-content-around "style="background: linear-gradient(to bottom, #33ccff 8%, #ff99cc 100%);height:100vh; ">     
+        <div class="container">
+          <div class="row d-flex justify-content-center align-items-center align-content-around px-2 mb-3  mt-2">
+     
+            <div class="col-xl-6 col-md-10 col-12   bg-white p-3 rounded">
+
+<h3 class="text-center">{% trans "Edit Account Info" %}</h3>
+<form method ="POST">
+ {% csrf_token %}
+ {{ form|crispy}}
+ {{ form.errors }}
+ <div class="d-grid gap-2 col-6 mx-auto">
+  <button class="btn btn-primary" >Edit Account</button>
+ 
+</div>
+
+
+           
+  </div>
+  </div>
+          
+        </div>
+      
+    
+    </main>
+{% endblock %}

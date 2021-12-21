@@ -1,0 +1,432 @@
+{% extends 'base.html' %}
+{% block title %} My Applications {%endblock%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% comment %} {% load crispy_forms_tags %} {% endcomment %}
+
+<main id="main">
+
+    <!-- ======= Jobs  breadcrumbs Section ======= -->
+<br> 
+    <section class="breadcrumbs">
+    
+      <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>My Applications</h2>
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+              <li><a href="{% url 'jobs' %}">Jobs</a></li>
+            <li>My Applications</li>
+          </ol>
+        </div>
+
+      </div>
+    </section><!-- Job breadcrumbs Section -->
+
+    <!-- ======= About Section ======= -->
+    <section id="blog" class="blog" style="min-height:70vh;">
+      <div class="container" data-aos="fade-up">
+
+        <div class="row">
+
+          <div class="col-lg-10 mx-auto">
+          
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <button class="nav-link active" id="all_applications-tab" data-bs-toggle="tab" 
+    data-bs-target="#all_applications" type="button" role="tab" aria-controls="all_applications" aria-selected="true">All </button>
+
+    <button class="nav-link" id="pending_applications-tab" data-bs-toggle="tab" data-bs-target="#pending_applications" 
+    type="button" role="tab" aria-controls="pending_applications" aria-selected="false">Pending </button>
+
+    <button class="nav-link" id="approved_applications-tab" data-bs-toggle="tab" data-bs-target="#approved_applications"
+     type="button" role="tab" aria-controls="approved_applications" aria-selected="false">Approved </button>
+
+  <button class="nav-link" id="cancelled_applications-tab" data-bs-toggle="tab" data-bs-target="#cancelled_applications" type="button"
+   role="tab" aria-controls="cancelled_applications" aria-selected="false">Cancelled </button>
+
+<button class="nav-link" id="done_jobs-tab" data-bs-toggle="tab" data-bs-target="#done_jobs" type="button"
+   role="tab" aria-controls="done_jobs" aria-selected="false">Done Jobs </button>
+
+  </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+
+
+
+<!-- start of all applications-->
+  <div class="tab-pane fade show active " id="all_applications" role="tabpanel" aria-labelledby="all_applications">
+<div class="container">
+<div class="row d-flex align-items-stretch">
+<h3 class="text-center my-4">All Applications</h3>
+{%for all_applications in all_applications %}
+
+ <div class="col-md-6 col-lg-6 col-sm-12">
+<div class="card py-1  my-3"> 
+  <div class="card-body">
+    <h5 class="card-title fw-light text-muted">Job : <a class="text-muted" href="{{all_applications.job.get_absolute_url}}">{{all_applications.job.title|truncatechars:55}}</a> </h5>
+    <ul class="list-unstyled">
+    <li  class="lh-lg"><span class="fw-bold">Charge :</span>  <span class="fw-light ml-3"> Ksh {{all_applications.charge}} </span></li>
+   <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light ml-3">
+   
+   {% if all_applications.status == 'Approved' %}   
+   <span class="badge bg-success">{{all_applications.status}}</span>
+   {%  elif all_applications.status == 'Pending' %}
+   <span class="badge bg-primary">{{all_applications.status}}</span>
+   {%  elif all_applications.status == 'Cancelled' %}
+   <span class="badge bg-danger">{{all_applications.status}}</span>
+   {%  elif all_applications.status == 'Done' %}
+   <span class="badge bg-info text-dark">{{all_applications.status}}</span>
+   {%  elif all_applications.status == 'Rejected' %}
+   <span class="badge bg-warning text-dark">{{all_applications.status}}</span>
+   {% endif%}
+
+   
+   </span> </li>
+    <li  class="lh-lg"><span class="fw-bold"> Applied : </span> <span class="fw-light ml-3">{{all_applications.created_at |naturaltime}} </span>
+        </li>
+        {% if all_applications.status == 'Approved' %}
+        <li  class="lh-lg"><span class="fw-bold"> Approved : </span> <span class="fw-light ml-3">{{all_applications.approved_time| naturaltime}} </span>
+        {% elif all_applications.status == 'Cancelled' or all_applications.status == 'Done' or all_applications.status == 'Rejected' %}
+        <li  class="lh-lg"><span class="fw-bold"> Cancelled: </span> <span class="fw-light ml-3">{{all_applications.cancel_reject_done_time| naturaltime}} </span>
+       
+   {% endif%}
+   {% if all_applications.other_description %}
+    <li  class="lh-lg"><span class="fw-bold">Other Description :</span>  <span class="fw-light ml-3">{{all_applications.other_description |safe}} </span></li>
+    {% endif %}
+    </ul>
+    {% if all_applications.status == 'Approved' %}
+    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+    <a href="{% url 'reject_job_approval' all_applications.application_uuid %}" class="btn btn-outline-warning">Reject Approval </a> 
+     <a href="{% url 'done_job' all_applications.application_uuid %}" class="btn btn-outline-primary">Finished </a>
+     </div>
+    {% elif all_applications.status == 'Pending' %}
+     <a href="{% url 'cancel_application' all_applications.application_uuid %}" class="btn btn-outline-danger">Cancel Applications </a>
+     {%endif%}
+  </div>
+</div>
+</div>
+
+{% empty %}
+<div class="col-md-12">
+<div class="card py-1  my-3"> 
+  <div class="card-body text-center">
+ 
+    <p class="card-text">Sorry ! You Have Not Applied For Any Job!</p>
+    
+  </div>
+</div>
+</div>
+{% endfor%}
+</div>
+</div>
+{% if all_applications %} <!---- check if there are object for pagination-->
+            <div class="blog-pagination">
+              <ul class="justify-content-center">
+              {% if all_applications.has_previous %}
+                  <li>
+      <a  href="?page={{ all_applications.previous_page_number }}">
+        <span >&laquo;</span>
+      </a>
+    </li>    
+    {% endif %}
+
+                  {% for i in all_applications.paginator.page_range %}
+             {% if all_applications.number == i %}
+                <li class="active"><a href="#">{{i}}</a></li>
+                {% else %}
+                  <li ><a href="?page={{i}}">{{i}}</a></li>
+              {% endif %}
+              {% endfor %}
+              {% if all_applications.has_next %}          
+              <li>
+    <a href="?page={{ all_applications.next_page_number }}">&raquo;</a>
+  </li> 
+  {% endif %}
+              </ul>
+              <br>
+            </div>
+
+            {% endif %}
+</div>
+
+
+
+<!-- end of all applications-->
+<!-- start of pending applications -->
+  <div class="tab-pane fade" id="pending_applications" role="tabpanel" aria-labelledby="pending_applications-tab">
+
+<div class="container">
+<div class="row d-flex align-items-stretch">
+<h3 class="text-center my-4">Pending applications</h3>
+{%for pending_applications in pending_applications %}
+
+ <div class="col-md-6 col-lg-6 col-sm-12">
+<div class="card py-1  my-3"> 
+  <div class="card-body">
+    <h5 class="card-title fw-light text-muted">Job : <a class="text-muted" href="{{pending_applications.job.get_absolute_url}}">{{pending_applications.job.title|truncatechars:55}}</a> </h5>
+    <ul class="list-unstyled">
+    <li  class="lh-lg"><span class="fw-bold">Charge :</span>  <span class="fw-light ml-3"> Ksh {{pending_applications.charge}} </span></li>
+   <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light ml-3">
+   
+   {% if pending_applications.status == 'Approved' %}   
+   <span class="badge bg-success">{{pending_applications.status}}</span>
+   {%  elif pending_applications.status == 'Pending' %}
+   <span class="badge bg-primary">{{pending_applications.status}}</span>
+   {%  elif pending_applications.status == 'Cancelled' %}
+   <span class="badge bg-danger">{{pending_applications.status}}</span>
+   {%  elif pending_applications.status == 'Done' %}
+   <span class="badge bg-info text-dark">{{pending_applications.status}}</span>
+   {% endif%}
+
+   
+   </span> </li>
+    <li  class="lh-lg"><span class="fw-bold"> Applied : </span> <span class="fw-light ml-3">{{pending_applications.created_at |naturaltime}} </span>
+        </li>
+        {% if pending_applications.status == 'Approved' %}
+        <li  class="lh-lg"><span class="fw-bold"> Approved : </span> <span class="fw-light ml-3">{{pending_applications.approved_time| naturaltime}} </span>
+        {% elif pending_applications.status == 'Cancelled' or pending_applications.status == 'Done' or pending_applications.status == 'Rejected' %}
+        <li  class="lh-lg"><span class="fw-bold"> Cancelled: </span> <span class="fw-light ml-3">{{pending_applications.cancel_reject_done_tim| naturaltime}} </span>
+       
+   {% endif%}
+   {% if pending_applications.other_description %}
+    <li  class="lh-lg"><span class="fw-bold">Other Description :</span>  <span class="fw-light ml-3">{{pending_applications.other_description |safe}} </span></li>
+    {% endif %}
+    </ul>
+   
+    {% if pending_applications.status == 'Pending' %}
+     <a href="{% url 'cancel_application' pending_applications.application_uuid %}" class="btn btn-outline-danger">Cancel Applications </a>
+     {%endif%}
+  </div>
+</div>
+</div>
+
+{% empty %}
+<div class="col-md-12">
+<div class="card py-1  my-3"> 
+  <div class="card-body text-center">
+ 
+    <p class="card-text">Sorry ! You Have No Pending Job Applications !</p>
+    
+  </div>
+</div>
+</div>
+{% endfor%}
+</div>
+</div>
+
+</div>
+
+
+<!-- end of pending applications -->
+<!-- start of approved applications -->
+  <div class="tab-pane fade" id="approved_applications" role="tabpanel" aria-labelledby="approved_applications-tab">
+
+<div class="container">
+<div class="row d-flex align-items-stretch">
+<h3 class="text-center my-4">Approved Applications</h3>
+{%for approved_applications in approved_applications %}
+
+ <div class="col-md-6 col-lg-6 col-sm-12">
+<div class="card py-1  my-3"> 
+  <div class="card-body">
+    <h5 class="card-title fw-light text-muted">Job : <a class="text-muted" href="{{approved_applications.job.get_absolute_url}}">{{approved_applications.job.title|truncatechars:55}}</a> </h5>
+    <ul class="list-unstyled">
+    <li  class="lh-lg"><span class="fw-bold">Charge :</span>  <span class="fw-light ml-3"> Ksh {{approved_applications.charge}} </span></li>
+   <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light ml-3">
+   
+   {% if approved_applications.status == 'Approved' %}   
+   <span class="badge bg-success">{{approved_applications.status}}</span>
+   {%  elif approved_applications.status == 'Pending' %}
+   <span class="badge bg-primary">{{approved_applications.status}}</span>
+   {%  elif approved_applications.status == 'Cancelled' %}
+   <span class="badge bg-danger">{{approved_applications.status}}</span>
+   {%  elif approved_applications.status == 'Done' %}
+   <span class="badge bg-info text-dark">{{approved_applications.status}}</span>
+   {% endif%}
+
+   
+   </span> </li>
+    <li  class="lh-lg"><span class="fw-bold"> Applied : </span> <span class="fw-light ml-3">{{approved_applications.created_at |naturaltime}} </span>
+        </li>
+        {% if approved_applications.status == 'Approved' %}
+        <li  class="lh-lg"><span class="fw-bold"> Approved : </span> <span class="fw-light ml-3">{{approved_applications.approved_time| naturaltime}} </span>
+        {% elif approved_applications.status == 'Cancelled' or approved_applications.status == 'Done' or approved_applications.status == 'Rejected' %}
+        <li  class="lh-lg"><span class="fw-bold"> Cancelled: </span> <span class="fw-light ml-3">{{approved_applications.cancel_reject_done_tim| naturaltime}} </span>
+       
+   {% endif%}
+   {% if approved_applications.other_description %}
+    <li  class="lh-lg"><span class="fw-bold">Other Description :</span>  <span class="fw-light ml-3">{{approved_applications.other_description |safe}} </span></li>
+    {% endif %}
+    </ul>
+    {% if approved_applications.status == 'Approved' %}
+    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+    <a href="{% url 'reject_job_approval' approved_applications.application_uuid %}" class="btn btn-outline-warning">Reject Approval </a> 
+     <a href="{% url 'done_job' approved_applications.application_uuid %}" class="btn btn-outline-primary">Finished </a>
+     </div>
+ 
+     {%endif%}
+  </div>
+</div>
+</div>
+{% empty %}
+<div class="col-md-12">
+<div class="card py-1  my-3"> 
+  <div class="card-body text-center">
+ 
+    <p class="card-text">Sorry ! You Have No Approved Job Applications!</p>
+    
+  </div>
+</div>
+</div>
+
+{% endfor%}
+</div>
+</div>
+</div>
+
+
+<!-- end of approved applications-->
+<!-- start of cancelled_applications-->
+<div class="tab-pane fade" id="cancelled_applications" role="tabpanel" aria-labelledby="cancelled_applications-tab">
+
+
+<div class="container">
+<div class="row d-flex align-items-stretch">
+<h3 class="text-center my-4">Cancelled Applications</h3>
+{%for cancelled_applications in cancelled_applications %}
+
+ <div class="col-md-6 col-lg-6 col-sm-12">
+<div class="card py-1  my-3"> 
+  <div class="card-body">
+    <h5 class="card-title fw-light text-muted">Job : <a class="text-muted" href="{{cancelled_applications.job.get_absolute_url}}">{{cancelled_applications.job.title|truncatechars:55}}</a> </h5>
+    <ul class="list-unstyled">
+    <li  class="lh-lg"><span class="fw-bold">Charge :</span>  <span class="fw-light ml-3"> Ksh {{cancelled_applications.charge}} </span></li>
+   <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light ml-3">
+   
+   {% if cancelled_applications.status == 'Approved' %}   
+   <span class="badge bg-success">{{cancelled_applications.status}}</span>
+   {%  elif cancelled_applications.status == 'Pending' %}
+   <span class="badge bg-primary">{{cancelled_applications.status}}</span>
+   {%  elif cancelled_applications.status == 'Cancelled' %}
+   <span class="badge bg-danger">{{cancelled_applications.status}}</span>
+   {%  elif cancelled_applications.status == 'Done' %}
+   <span class="badge bg-info text-dark">{{cancelled_applications.status}}</span>
+   {% endif%}
+
+   
+   </span> </li>
+    <li  class="lh-lg"><span class="fw-bold"> Applied : </span> <span class="fw-light ml-3">{{cancelled_applications.created_at |naturaltime}} </span>
+        </li>
+        {% if cancelled_applications.status == 'Approved' %}
+        <li  class="lh-lg"><span class="fw-bold"> Approved : </span> <span class="fw-light ml-3">{{cancelled_applications.approved_time| naturaltime}} </span>
+        {% elif cancelled_applications.status == 'Cancelled' or cancelled_applications.status == 'Done' or cancelled_applications.status == 'Rejected' %}
+        <li  class="lh-lg"><span class="fw-bold"> Cancelled: </span> <span class="fw-light ml-3">{{cancelled_applications.cancel_reject_done_tim| naturaltime}} </span>
+       
+   {% endif%}
+   {% if cancelled_applications.other_description %}
+    <li  class="lh-lg"><span class="fw-bold">Other Description :</span>  <span class="fw-light ml-3">{{cancelled_applications.other_description |safe}} </span></li>
+    {% endif %}
+    </ul>
+   
+  </div>
+</div>
+</div>
+
+{% empty %}
+<div class="col-md-12">
+<div class="card py-1  my-3"> 
+  <div class="card-body text-center">
+ 
+    <p class="card-text">You Have No Cancelled Job Application !</p>
+    
+  </div>
+</div>
+</div>
+{% endfor%}
+</div>
+</div>
+
+</div>
+
+
+<!-- end of cancelled_applications-->
+<!-- start of done_jobs -->
+<div class="tab-pane fade" id="done_jobs" role="tabpanel" aria-labelledby="done_jobs-tab">
+
+
+<div class="container">
+<div class="row d-flex align-items-stretch">
+<h3 class="text-center my-4">Done Jobs</h3>
+{%for done_jobs in done_jobs %}
+
+ <div class="col-md-6 col-lg-6 col-sm-12">
+<div class="card py-1  my-3"> 
+  <div class="card-body">
+    <h5 class="card-title fw-light text-muted">Job : <a class="text-muted" href="{{done_jobs.job.get_absolute_url}}">{{done_jobs.job.title|truncatechars:55}}</a> </h5>
+    <ul class="list-unstyled">
+    <li  class="lh-lg"><span class="fw-bold">Charge :</span>  <span class="fw-light ml-3"> Ksh {{done_jobs.charge}} </span></li>
+   <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light ml-3">
+   
+   {% if done_jobs.status == 'Approved' %}   
+   <span class="badge bg-success">{{done_jobs.status}}</span>
+   {%  elif done_jobs.status == 'Pending' %}
+   <span class="badge bg-primary">{{done_jobs.status}}</span>
+   {%  elif done_jobs.status == 'Cancelled' %}
+   <span class="badge bg-danger">{{done_jobs.status}}</span>
+   {%  elif done_jobs.status == 'Done' %}
+   <span class="badge bg-info text-dark">{{done_jobs.status}}</span>
+   {% endif%}
+
+   
+   </span> </li>
+    <li  class="lh-lg"><span class="fw-bold"> Applied : </span> <span class="fw-light ml-3">{{done_jobs.created_at |naturaltime}} </span>
+        </li>
+        {% if done_jobs.status == 'Approved' %}
+        <li  class="lh-lg"><span class="fw-bold"> Approved : </span> <span class="fw-light ml-3">{{done_jobs.approved_time| naturaltime}} </span>
+        {% elif done_jobs.status == 'Cancelled' or done_jobs.status == 'Done' or done_jobs.status == 'Rejected' %}
+        <li  class="lh-lg"><span class="fw-bold"> Cancelled: </span> <span class="fw-light ml-3">{{done_jobs.cancel_reject_done_tim| naturaltime}} </span>
+       
+   {% endif%}
+   {% if done_jobs.other_description %}
+    <li  class="lh-lg"><span class="fw-bold">Other Description :</span>  <span class="fw-light ml-3">{{done_jobs.other_description |safe}} </span></li>
+    {% endif %}
+    </ul>
+   
+  </div>
+</div>
+</div>
+{% empty %}
+<div class="col-md-12">
+<div class="card py-1  my-3"> 
+  <div class="card-body text-center">
+ 
+    <p class="card-text">Sorry ! You Have Not Done Any Job!</p>
+    
+  </div>
+</div>
+</div>
+{% endfor%}
+</div>
+</div>
+</div>
+
+
+<!-- end of done jobs-->
+
+</div>
+
+          </div><!-- End blog entries list -->
+
+          
+        </div>
+
+      </div>
+    </section><!-- End Blog Section -->
+
+   
+  </main><!-- End #main -->
+  
+{% endblock %}

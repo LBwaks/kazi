@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block title%} Applicant Profile {% endblock %}
+{% block content %}
+{% load humanize %}
+{% load static %}
+<main id="main">
+  <br>
+  <section class="breadcrumbs">
+    <div class="container">
+
+      <div class="d-flex justify-content-between align-items-center">
+        <h2>Applicant Profile  </h2>
+        <ol>
+          <li><a href="{% url 'home' %} ">Home</a></li>
+         
+            <li>{{  applicant.first_name }}
+{{  applicant.last_name }}</li>
+        </ol>
+      </div>
+
+    </div>
+  </section>
+  
+  <section id="artists" class="artists">
+     <div class="container">
+
+        <div class="card">
+  <div class="card-body">
+<div class="container">
+<div class="row">
+<div class="col-md-4 col-lg-4 col-sm-12 "> 
+<div class="card border-secondary mb-3" style="max-width: 19rem;">
+  <div class="card-body">
+  <h5 class="card-title text-center "> <u>Personal Info </u></h5>
+  {% if applicant.personal.profile_pic %}
+  <div class="personal-pic mb-4 mx-auto d-flex justify-content-center">
+  <img src="{{applicant.personal.profile_pic.url}}" alt="{{ user.applicant.username }}" width="150" height="150" class="rounded-circle">
+   
+  </div>
+
+     {% endif %}
+
+
+
+
+  <p> <span class="fw-bold">Name :</span> <span class="text-muted fw-lighter">{{  applicant.first_name }} {{  applicant.last_name }} </span></p>
+  <hr>  
+
+
+<p> <span class="fw-bold">Gender :</span> <span class="text-muted fw-lighter">{{ applicant.personal.gender}}</span></p>
+<hr>
+<p> <span class="fw-bold">Tell :</span> <span class="text-muted fw-lighter">{{ applicant.personal.phone_number}}</span></p>
+ 
+
+<p> <span class="fw-bold">Address :</span> <span class="text-muted fw-lighter">{{ applicant.personal.county}}, {{ applicant.personal.location}},{{ applicant.personal.address}} </span></p>
+  <hr>
+  <p> <span class="fw-bold">Bio :</span> <span class="text-muted fw-lighter">{{ applicant.personal.bio |safe}} </span></p>
+ <div class="text-center">
+  {% comment %} <a class="btn btn-info" href="{% url 'edit_profile'  applicant.personal.profile_uuid  %}">Edit Profile Info</a> {% endcomment %}
+ </div>
+  </div>
+</div>
+
+
+ </div>
+<div class="col-md-8 col-lg-8 col-sm-12">
+<div class="card">
+  <div class="card-header">
+   <nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <button class="nav-link active" id="nav-artists-tab" data-bs-toggle="tab" data-bs-target="#nav-artists" type="button" role="tab" aria-controls="nav-artists" aria-selected="true">Other Info</button>
+    </div>
+</nav>
+  </div>
+  <div class="card-body">
+  <div class="tab-content" id="nav-tabContent">
+  <div class="tab-pane fade show active" id="nav-artists" role="tabpanel" aria-labelledby="nav-artists-tab">
+  
+
+  
+  <div class="card  mb-3">
+  <div class="card-body">
+
+<p> <span class="fw-bold"> Skills:</span> <span class="text-muted fw-lighter"> <span class="badge bg-secondary">{{  applicant.personal.skills }}</span> </span></p>
+
+  </div>
+</div>
+<div class="card  mb-3">
+  <div class="card-body">
+  {% if applicant.personal.cv %}
+<p> <span class="fw-bold">Curriculum Vitae :</span> <span class="text-muted fw-lighter"><a href="{{applicant.personal.cv.url }}" class="btn btn-info" target="_blank"> View  Cv</a>  </span></p>
+{% else %}
+<p> <span class="fw-bold">Curriculum Vitae :</span> <span class="text-muted fw-lighter"> No Cv Uploaded  </span></p>
+{% endif %}
+<br>
+
+  </div>
+</div>
+<div class="card  mb-3">
+  <div class="card-body">
+
+<p> <span class="fw-bold"> Jobs Done :</span> <span class="text-muted fw-lighter">{{  applicant.personal.applications.charge }} </span></p>
+<ul class="list-group list-group-flush">
+{% for application in applications %}
+<a href="{{application.job.get_absolute_url}}" class="list-group-item">{{application.job.title}}</a>
+{% empty %}
+<p> This Applicant Has Not Done Any Job !</p>
+{% endfor%}
+
+  
+</ul>
+{% comment %} {% for job in jobs %}
+{{job.title }}
+{% endfor%} {% endcomment %}
+  </div>
+</div>
+
+  </div>
+
+
+</div>
+  
+  </div>
+  
+
+
+ 
+  
+</div>
+</div>
+
+</div>
+</div>
+
+    
+  </div>
+</div> 
+
+
+
+{% comment %} {{ applicant.user.personal.type_of_ applicant.user}}
+<br>
+
+
+ {% endcomment %}
+
+
+
+
+        
+
+     </div>
+   </section><!-- End artists Single Section -->
+
+</main>
+
+
+{% endblock %}

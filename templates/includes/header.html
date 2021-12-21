@@ -1,0 +1,54 @@
+{% load static %}
+<header id="header" class="fixed-top d-flex align-items-center ">
+    <div class="container d-flex justify-content-between align-items-center">
+
+      <div class="logo">
+        <h1 class="text-light"><a href="index.html"><span>Kazi Yangu</span></a></h1>
+        <!-- Uncomment below if you prefer to use an image logo -->
+        <!-- <a href="index.html"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+      </div>
+
+      <nav id="navbar" class="navbar">
+      {% with request.resolver_match.url_name as url_name %}
+        <ul>
+          <li><a class="{% if url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
+          <li><a class="{% if url_name == 'jobs' %}active{% endif %}"  href="{% url 'jobs' %}">Jobs</a></li>
+          <li><a class="{% if url_name == 'add_job' %}active{% endif %}"  href="{% url 'add_job' %}">Post Job</a></li>
+          {% if user.is_authenticated and user.is_staff %}
+            <li><a class="{% if url_name == 'add_blog' %}active{% endif %}"  href="{% url 'add_blog' %}">Post Blog</a></li>
+            {% endif %}
+         {% comment %} <li><a href="portfolio.html">Portfolio</a></li>
+          <li><a href="team.html">Team</a></li> {% endcomment %}
+          <li><a  class="{% if url_name == 'blogs' %}active{% endif %}" href="{% url 'blogs' %}">Blog</a></li>
+          {% if user.is_authenticated %}
+          <li class="dropdown "><a href="#"><span> {{user.username}}</span> <i class="bi bi-chevron-down"></i></a>
+            <ul> 
+            {% if user.personal.user_type == 'recruiter' %}
+              <li><a href="{% url 'my_jobs' %}">My Jobs </a></li>
+              {% elif user.personal.user_type == 'seeker' %}
+              
+              <li><a href="{% url 'my_application' %}">My Applications </a></li>
+              {% endif %}
+              {% if user.personal.user.username %}
+              <li><a href="{% url 'profile' user.personal.profile_uuid  %}">My Profile</a></li>
+              {% else %}
+          <li><a href="{% url 'profile_form' %}">Create Profile</a></li>
+          
+          {% endif %} 
+             
+               <li><a href=" {% url 'account_logout'%}">Sign Out </a></li>
+            </ul>
+          </li>
+           
+            {% else %}
+            <li><a class="{% if url_name == 'account_login' %}active{% endif %}" href="{% url 'account_login' %}">Log In </a></li>
+           <li><a class="{% if url_name == 'account_signup' %}active{% endif %}"  href=" {% url 'account_signup'%}">Sign Up </a></li>
+           {% endif %}
+           
+        </ul>
+        {% endwith %}
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav><!-- .navbar -->
+
+    </div>
+  </header><!-- End Header -->

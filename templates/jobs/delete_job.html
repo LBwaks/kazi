@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %} Delete Job{%endblock%}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+
+<main id="main" >
+
+    <!-- ======= Jobs  breadcrumbs Section ======= -->
+<br> 
+    <section class="breadcrumbs">
+    
+      <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Delete Job</h2>
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'jobs' %}">Jobs</a></li>
+            <li>Delete This Job</li>
+          </ol>
+        </div>
+
+      </div>
+    </section><!-- Job breadcrumbs Section -->
+    <section id="add_job" class="add_job " style="min-height:100vh;">
+ <div class="container ">
+
+        <div class="row">
+
+          <div class="col-lg-8 col-md-8 mx-auto d-flex  justify-content-center ">
+          <div class="card m-5 shadow-lg  bg-body rounded" style="width: 50rem;">
+          <div class="card-header text-center">
+    Are Sure You Want To Delete This Job
+  </div> 
+  {% comment %} <h5 class="card-header text-center py-4">Add Artist's Event</h5> {% endcomment %}
+  <div class="card-body">
+<p> <span class="fs-6 fw-bold m-2">Job Title :</span> <span class="text-muted fw-light">{{job.title}}</span></p>
+<p> <span class="fs-6 fw-bold m-2">Category:</span> <span class="text-muted fw-light"><i class="bi bi-tags"></i> {{job.tag }}</span></p>
+<p> <span class="fs-6 fw-bold m-2">Location:</span> <span class="text-muted fw-light"> {{job.county}} ,{{job.location}} ,{{job.address}}</span></p>
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+{{ myform.media }}
+ {{ form|crispy}}
+
+<div class="d-grid gap-2 col-6 mx-auto">
+  
+  <button class="btn btn-danger" >Confirm Delete</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+</section>
+  </main><!-- End #main -->

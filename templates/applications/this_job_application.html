@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %} Jobs Applications {%endblock%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load tz %}
+{% comment %} {% load crispy_forms_tags %} {% endcomment %}
+
+<main id="main" style="min-height:85vh;" >
+
+    <!-- ======= Jobs  breadcrumbs Section ======= -->
+<br> 
+    <section class="breadcrumbs">
+    
+      <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Job Applications</h2>
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+             <li><a href="{% url 'jobs' %}">Jobs</a></li>
+            <li>Job Applications</li>
+          </ol>
+        </div>
+
+      </div>
+    </section><!-- Job breadcrumbs Section -->
+    <section id="blog" class="blog">
+      <div class="container-fluid" data-aos="fade-up">
+
+        <div class="row">
+
+          <div class="col-lg-10 mx-auto">
+<div class="row d-flex align-items-stretch">
+
+{% for this_job_applications in  applications %}
+<div class="col-md-6 col-lg-6 col-sm-12">
+{% if this_job_applications.status == 'Approved' %}
+<div  class="card py-1  my-3" style="background:beige"> 
+
+{% elif this_job_applications.status == 'Cancelled' %} 
+<div  class="card py-1  my-3" style="background:#F0FFFF"> 
+
+{% elif this_job_applications.status == 'Done' %} 
+<div  class="card py-1  my-3" style="background:#DCDCDC"> 
+
+{% else %}
+<div  class="card py-1  my-3 ">
+{% endif %}
+  <div class="card-body">
+    <h5 class="card-title fw-light text-muted">Job : <a   class="link-secondary" href="{{this_job_applications.job.get_absolute_url }}">  {{this_job_applications.job.title|truncatechars:55}}</a> </h5>
+    <ul class="list-unstyled">
+    <li  class="lh-lg"><span class="fw-bold">Applicant :</span>  <span class="fw-light ml-3"> {{this_job_applications.user.first_name}} {{this_job_applications.user.last_name}} </span></li>
+    <li  class="lh-lg"><span class="fw-bold">Charge :</span>  <span class="fw-light ml-3"> Ksh {{this_job_applications.charge}} </span></li>
+   <li  class="lh-lg"><span class="fw-bold"> Status : </span> <span class="fw-light ml-3">
+
+<!-- check status of the application-->
+   {% if this_job_applications.status == 'Approved' %}   
+   <span class="badge bg-success">{{this_job_applications.status}}</span>
+   {%  elif this_job_applications.status == 'Pending' %}
+   <span class="badge bg-primary">{{this_job_applications.status}}</span>
+   {%  elif this_job_applications.status == 'Cancelled' %}
+   <span class="badge bg-danger">{{this_job_applications.status}}</span>
+   {%  elif this_job_applications.status == 'Done' %}
+   <span class="badge bg-info text-dark">{{this_job_applications.status}}</span>
+   {% endif%}
+
+   </span> </li>
+    <li  class="lh-lg"><span class="fw-bold"> Applied : </span> <span class="fw-light ml-3">{{this_job_applications.created_at |naturaltime}} </span>
+        </li>
+        {% if this_job_applications.status == 'Approved' %}
+        {% if this_job_applications.approved_time %}
+        <li  class="lh-lg"><span class="fw-bold"> Approved : </span> <span class="fw-light ml-3">{{this_job_applications.approved_time| naturaltime}} </span>
+        {% endif %}
+        {% elif this_job_applications.status == 'Cancelled' %}
+        
+        {% if this_job_applications.cancel_reject_done_time %}
+        <li  class="lh-lg"><span class="fw-bold"> Cancelled: </span> <span class="fw-light ml-3">{{this_job_applications.cancel_reject_done_time| naturaltime}} </span>
+       {% endif %}
+       
+   {% endif%}
+   {% if this_job_applications.other_description %}
+    <li  class="lh-lg"><span class="fw-bold">Other Description :</span>  <span class="fw-light ml-3">{{this_job_applications.other_description |safe}} </span></li>
+    {% endif %}
+    </ul>
+     {% if this_job_applications.status == 'Cancelled' %}
+     <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+    <button class= "btn btn-outline-dark">Cancelled </button> 
+    </div>
+     {% elif this_job_applications.status == 'Done' %}
+     <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+    <button class= "btn btn-outline-dark">Done Job</button> 
+  
+    <a href="{% url 'applicant' this_job_applications.user.username %}" class="btn btn-outline-secondary">Applicant Profile </a>
+  </div>
+    {% elif this_job_applications.status == 'Approved' %}
+    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+    <a href="{% url 'cancel_job' this_job_applications.application_uuid %}" class="btn btn-outline-warning">Cancel Approval </a> 
+     <a href="{% url 'done_job' this_job_applications.application_uuid %}" class="btn btn-outline-primary">Confirm Job Done </a>
+        <a href="{% url 'applicant' this_job_applications.user.username %}" class="btn btn-outline-secondary">Applicant Profile </a>
+     </div>
+    {% elif this_job_applications.status == 'Pending' %}
+    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+     <a href="{% url 'approve' this_job_applications.application_uuid %}" class="btn btn-outline-info">Approve Application </a>
+     <a href="{% url 'applicant' this_job_applications.user.username %} " class="btn btn-outline-secondary">Applicant Profile </a>
+     </div>
+     {%endif%}
+   </div>
+   </div>
+   </div>
+   {% empty %}
+   <div class="col-12 col-sm-12 col-md-12 ">
+     <div class="icon-box text-center">
+     <div class="card m-3 p-3 shadow-lg p-3 mb-5 bg-body rounded">
+  <div class="card-body">
+  
+    <p class="card-text">Sorry ! This Job Has No Applications !</p>
+   
+  </div>
+</div>
+   
+
+   </div>
+   </div>
+{% endfor %}
+</div>
+</div>
+</div>
+</div>
+</section>
+    </main>
+
+{% endblock %}

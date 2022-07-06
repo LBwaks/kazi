@@ -2,7 +2,7 @@
 
  <h3 class="sidebar-title">Search</h3>
                <div class="sidebar-item search-form">
-  <form action="{% url 'search' %}" method="GET" >
+  <form action="{% url 'find' %}" method="GET" >
                 {% csrf_token %}
               
                   <input type="search" name="q" >

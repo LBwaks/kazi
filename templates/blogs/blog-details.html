@@ -45,32 +45,33 @@
               <div class="entry-meta">
                 <ul>
                   <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a>{{ blog.user.username }}</a></li>
-                                    <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a>{{ blog.created_date }}</a></li>
-                  {% comment %} <form action="{% url 'like_blog' blog.slug %}" method = "POST">
+                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a>{{ blog.created_date }}</a></li>
+                   <form action="{% url 'like_blog' blog.slug %}" method = "POST" >
        {% csrf_token%}
        {% if user.is_authenticated %}
-       {% if liked %}
-       <button type="submit" name="blog_slug" value ="{{blog.slug}}" class="btn btn-sm "> <i class="bi bi-heart text-danger"> {{ total_likes }}</i> </button>
+       {% comment %} {% if liked %} {% endcomment %}
+       {% comment %} <button type="submit" name="blog_slug" value ="{{blog.slug}}" class="btn btn-sm "> <i class="bi bi-heart text-danger"> {{ total_likes }}</i> </button> {% endcomment %}
+       <button type="submit" onsubmit="return false" name="blog_slug" value ="{{blog.slug}}" class="btn btn-sm "> <i class="bi bi-heart text-success"> {% if total_likes %} {{ total_likes }} {% endif %}</i> </button>
 
-      {% else %}
-        <button type="submit" name="blog_slug" value ="{{blog.slug}}" class="btn btn-sm "><i class="bi bi-heart text-success"> </i> </button>
-           {% endif%}
-           {% else %}
-            <button type="submit" name="blog_slug" value ="{{blog.slug}}" class="btn btn-sm "> <i class="bi bi-heart text-success"> {% if total_likes %} {{ total_likes }} {% endif %}</i> </button>
-
+      {% comment %} {% else %} {% endcomment %}
+       {% comment %} <button type="submit" name="blog_slug" value ="{{blog.slug}}" class="btn btn-sm "><i class="bi bi-heart text-success"> </i> </button> {% endcomment %}
+           {% comment %} {% endif%} {% endcomment %}
+           
+        
            {% endif %}
            
-           </form>
-                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="blog-single.html">{{ blog.created_date }}</a></li>
+           </form> 
+           
+                  <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a >{{ blog.created_date }}</a></li>
                   {% if comments.count %}
                   <li class="d-flex align-items-center"><i class="bi bi-chat-dots"></i> <a href="%#comments %">{{ comments.count }}</a></li>
                   {% else %}
                   <li class="d-flex align-items-center"><a href="#comment"><i class="bi bi-chat-dots"></i> </a></li>
-                  {% endif %} {% endcomment %}
+                  {% endif %} 
 
 </ul>
               </div>
- 
+              
               <div class="entry-content">
                 <p>
                  {{blog.description | safe}}</p>
@@ -98,36 +99,8 @@
             <div id="comments" class="blog-comments">
 
                <h4 class="comments-count">{{ blog.blog_comments.count}} Comments</h4>
- {% if not blog.blog_comments.all %}
-          No comments yet 
-          {% else %}
-          {% for comment in blog.blog_comments.all %}
-         
-             <div id="comment-1" class="comment">
-               <div class="d-flex">
-                 <div class="comment-img">
-                 {% if comment.user.profile.profile_pic.url %}
-                 <img src="{{ comment.user.profile.profile_pic.url }}" alt="{{comment.user.first_name}}" height="35" width="30" class="img-circle">
-                 {% else %}
-                  <img src="{% static 'img/profile/avatar.png' %}" alt="{{comment.user.first_name}}" height="35" width="25" class="img-circle">
-                 {% endif%}
-                 </div>
-                 <div>
-                   <h5><a href="">{{ comment.user.username }}</a> <a href="#" class="reply"><i class="bi bi-reply-fill"></i> Reply</a></h5>
-                   {% comment %} <a href="{% url 'profile_page' artist.user.profile.id %}">Profile Page</a> {% endcomment %}
-                   {{ comment.created_date }}
-                   <p>
-                     {{ comment.body}}
-                   </p>
-                 </div>
-               </div>
-             </div><!-- End comment #1 -->
-
- {% endfor %}
-          {% endif %}
-
-              <div class="reply-form">
-                <h4>Leave a Reply</h4>
+               <div class="reply-form">
+                <h4>Leave a Comment</h4>
                  <div class="form-group">
           <form  id="comment" method="POST">
           {% csrf_token %}
@@ -137,6 +110,49 @@
                 </div>
 
               </div>
+ {% if not blog.blog_comments.all %}
+          No comments yet 
+          {% else %}
+          {% for comment in blog.blog_comments.all %}
+         {% comment %} {% if comment.is_parent %} {% endcomment %}
+             <div id="comment-1" class="comment">
+               <div class="d-flex">
+                 <div class="comment-img">
+                 {% if comment.user.personal.profile_pic.url %}
+                 <img src="{{comment.user.personal.profile_pic.url }}"  alt="{{comment.user.first_name}}" height="55" width="20"  class="rounded-circle">
+                 {% else %}
+                  <img src="{% static 'profiles/profile.png' %}" alt="{{comment.user.first_name}}" height="35" width="25"  class="rounded-circle">
+                 {% endif%}
+                 </div>
+                 <div>
+                   <h5><a >{{ comment.user.username }}</a>
+                     {% comment %} <button  class="reply"><i class="bi bi-reply-fill"onclick="commentReplyToggle('{{comment.pk}}')" ></i> Reply</button>  {% endcomment %}
+                    </h5>
+                   {% comment %} <a href="{% url 'profile_page' artist.user.profile.id %}">Profile Page</a> {% endcomment %}
+                  <span>{{ comment.created_date | naturaltime}}</span> 
+                   <span>
+                     {{ comment.body  | safe}}
+                   </span>
+                 </div>
+               </div>
+             </div><!-- End comment #1 -->
+             {% comment %} <div class="reply-form ">
+              <h4>Leave a Comment</h4>
+               <div class="form-group">
+        <form  id="comment" method="POST" action="{% url 'reply' blog.slug comment.slug %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {{ myform.media }}
+        <button class="btn btn-primary"> Add Comment</button>
+        </form>
+              </div>
+
+            </div> {% endcomment %}
+{% comment %} {% endif %} {% endcomment %}
+ {% endfor %}
+          {% endif %}
+
+             
 
             </div><!-- End blog comments -->
 

@@ -28,7 +28,6 @@
 <br>
  <section id="add_job" class="add_job bg-light">
       <div class="container" data-aos="fade-up">
-{{user.username}}
         <div class="row">
 
           <div class="col-md-10 mx-auto">
@@ -48,8 +47,14 @@
 </div>
 {% else %}
 <div class="d-grid gap-2 col-6 mx-auto">
-  
+  {% if not my_other_applications %}
   <button class="btn btn-primary" >Submit</button>
+  {% else %}
+  <br>  
+  <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+  <strong>Hello {{user.username}} !</strong> You have already applied for this job. 
+</div>
+  {% endif %}
 </div>
 {% endif %}
 </form>

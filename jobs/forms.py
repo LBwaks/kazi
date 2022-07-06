@@ -41,10 +41,10 @@ class JobForm(forms.ModelForm):
             'description': forms.CharField(widget=CKEditorWidget(attrs={'class':'description '})),
             'application_deadline': forms.DateInput(format=('%Y-%m-%d %H:%M'), attrs={'class': 'form-control application_deadline ','placeholder': 'Select a date','type': 'datetime-local' }),
             'job_done_date': forms.DateInput(format=('%Y-%m-%d %H:%M'), attrs={'class': 'form-control job_done_date ','placeholder ': 'Select a date','type': 'datetime-local' }),
-            'county': forms.TextInput(attrs={'class':'form-control county ' 'required'}),
+            'county': forms.Select(attrs={'class':'form-select county ' 'required'}),
             'location': forms.TextInput(attrs={'class':'form-control location ' 'required'}),
             'address': forms.TextInput(attrs={'class':'form-control address ' 'required'}),
-            'image': forms.FileInput(attrs={'class':'form-control image ','multiple':True}),
+            'image': forms.ClearableFileInput(attrs={'class':'form-control image ','multiple':True}),
             'video':forms.FileInput(attrs={'class':'form-control video '}),
         }
 
@@ -164,7 +164,7 @@ class JobEditForm(forms.ModelForm):
             'description': forms.CharField(widget=CKEditorWidget(attrs={'class':'description '})),
             'application_deadline': forms.DateInput(format=('%Y-%m-%d %H:%M'), attrs={'class': 'form-control application_deadline ','type': 'datetime-local' }),
             'job_done_date': forms.DateInput(format=('%Y-%m-%d %H:%M'), attrs={'class': 'form-control job_done_date ','type': 'datetime-local' }),
-            'county': forms.TextInput(attrs={'class':'form-control county ' 'required'}),
+            'county': forms.Select(attrs={'class':'form-select county ' 'required'}),
             'location': forms.TextInput(attrs={'class':'form-control location ' 'required'}),
             'address': forms.TextInput(attrs={'class':'form-control address ' 'required'}),
             'image': forms.FileInput(attrs={'class':'form-control image ','multiple':True}),

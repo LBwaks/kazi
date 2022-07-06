@@ -127,39 +127,7 @@
     }
   }, true)
 
-  /**
-   * Skills animation
-   */
-  let skilsContent = select('.skills-content');
-  if (skilsContent) {
-    new Waypoint({
-      element: skilsContent,
-      offset: '80%',
-      handler: function(direction) {
-        let progress = select('.progress .progress-bar', true);
-        progress.forEach((el) => {
-          el.style.width = el.getAttribute('aria-valuenow') + '%'
-        });
-      }
-    })
-  }
-
-  /**
-   * Testimonials slider
-   */
-  new Swiper('.testimonials-carousel', {
-    speed: 400,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
-    },
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
-    }
-  });
+ 
 
   /**
    * Porfolio isotope and filter
@@ -226,7 +194,50 @@
       mirror: false
     });
   });
+  /**
+   * message to dissappera
+   */
+   
+   $(document).ready(function() {
+    // messages timeout for 10 sec
+    setTimeout(function() {
+        $('#messages').fadeOut('slow');
+    }, 3000); // <-- time in milliseconds, 1000 =  1 sec
+});
 
- 
+// $('.photo').on('change', function() {
+
+//   const size = 
+//      (this.files[0].size / 1024 / 1024).toFixed(2);
+
+//   if (size > 4 || size < 2) {
+//       alert("File must be between the size of 2-4 MB");
+//   } else {
+//       $("#output").html('<b>' +
+//          'This file size is: ' + size + " MB" + '</b>');
+//   }
+// });
 
 })()
+
+anime({
+  targets: '.row svg',
+  translateY: 10,
+  autoplay: true,
+  loop: true,
+  easing: 'easeInOutSine',
+  direction: 'alternate'
+});
+
+anime({
+  targets: '#zero',
+  translateX: 10,
+  autoplay: true,
+  loop: true,
+  easing: 'easeInOutSine',
+  direction: 'alternate',
+  scale: [{value: 1}, {value: 1.4}, {value: 1, delay: 250}],
+    rotateY: {value: '+=180', delay: 200},
+});
+
+

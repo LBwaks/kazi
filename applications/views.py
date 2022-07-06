@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from applications.forms import ApplicationForm
-from applications.models import Application,Job 
+from applications.forms import ApplicationForm,ComplaintReviewForm
+from applications.models import Application,Job ,ComplaintsReview
 from profiles.models import Personal
 from django.contrib.auth.models import User
 from.forms import ApplicationForm
@@ -12,6 +12,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.contrib.messages.views import SuccessMessageMixin
 from django.utils import timezone
 import datetime
+
 # Create your views here.
 
 
@@ -25,6 +26,7 @@ class ApplicationView(ListView):
         job = get_object_or_404(Job,slug=self.kwargs['slug'])
         applications = Application.objects.filter(job=job).order_by('-created_at')
         context={'applications':applications } 
+        # context={'job':job}
         return context
 
 
@@ -36,9 +38,10 @@ class JobApplicationsView(ListView):
     def get_context_data(self, **kwargs):
         context = super(JobApplicationsView,self).get_context_data(**kwargs)
         job = get_object_or_404(Job,slug=id)
-        applications = Application.objects.filter(job=job).order_by('-created_at')
+        # applications = Application.objects.filter(job=job).order_by('-created_at')
         # applications = Application.objects.get().order_by('-created_at')
-        context={'applications':applications } 
+        # context={'applications':applications }
+        context={'job':job} 
         return context
     
 
@@ -50,14 +53,19 @@ class AddApplicationView(SuccessMessageMixin, LoginRequiredMixin,CreateView):
     success_message= 'Job Application Successful !'
     # global job 
     # job = Job.objects.get(Job, slug=self.kwargs['slug']) 
-    # def get_context_data(self, **kwargs):
-    #     context = super(AddApplicationView,self).get_context_data(**kwargs)
-    #     application= Application.objects.filter(user=self.request)
-    #     context["application"] = application
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super(AddApplicationView,self).get_context_data(**kwargs)      
+        job = get_object_or_404(Job,id=self.kwargs['job_id'])      
+        applicant = get_object_or_404(User,id=self.request.user.id)        
+        my_other_applications= Application.objects.filter(user_id = applicant,job_id=job)
+
+        context["job"] = job
+        context['my_other_applications'] = my_other_applications
+        
+      
+        return context
     
-    def form_valid(self,form):        
-        # job = get_object_or_404(Job, slug=self.kwargs['slug'])       
+    def form_valid(self,form):             
         application =form.save(commit=False)
         application.user = self.request.user  
         application.job_id =self.kwargs['job_id']
@@ -91,7 +99,7 @@ class MyApplicationsView(ListView):
             except PageNotAnInteger:
                 all_applications=paginator.page(1)
             except EmptyPage:
-                all_applications=paginator.page(paginator.num_pages)
+              all_applications=paginator.page(paginator.num_pages)
             pending_applications = Application.objects.filter(user=self.request.user,status='Pending').order_by('-created_at')
             approved_applications = Application.objects.filter(user=self.request.user,status='Approved').order_by('-created_at')
             cancelled_applications = Application.objects.filter(user=self.request.user,status='Cancelled').order_by('-created_at')
@@ -101,21 +109,21 @@ class MyApplicationsView(ListView):
             'approved_applications':approved_applications,'done_jobs':done_jobs,'cancelled_applications':cancelled_applications}
             return context
 
-def approve_application(request, application_uuid):    
-    application = get_object_or_404(Application,application_uuid = application_uuid)    
-    application.status='Approved'
-    job_id= application.job_id
-    application.cancel_reject_done_time=timezone.now() 
-    job=get_object_or_404(Job,id=job_id)
-    job.status='Approved'
-    job.save()  
-    application.save()
-    if application.save():
-        job=get_object_or_404(Job,id=job_id)
-        job.status='Approved'
-        job.save()
+# def approve_application(request, slug,application_uuid):    
+#     application = get_object_or_404(Application,application_uuid = application_uuid)  
+#     application.status='Approved'
+#     job_id= application.job_id
+#     application.cancel_reject_done_time=timezone.now() 
+#     job=get_object_or_404(Job,id=job_id)
+#     job.status='Approved'
+#     job.save()  
+#     application.save()
+#     if application.save():
+#         job=get_object_or_404(Job,id=job_id)
+#         job.status='Approved'
+#         job.save()
         
-    return render(request,'jobs/my_jobs.html')
+#     return render(request,'jobs/my_jobs.html')
 
 
 
@@ -158,11 +166,43 @@ def application_done_job(request,application_uuid):
 
     return redirect('my_application')
 
+# def done_job(request,application_uuid):
+#     application = get_object_or_404(Application,application_uuid=application_uuid)
+#     if application.status =='Approved':
+#         job_id = application.job_id
+#         job = get_object_or_404(Job,id=job_id)
+#         if job.status == 'Approved' or job.status == ' Done':
+#             job.status= 'Done'
+#             job.save()
+#         application.status ='Done'
+#         application.cancel_reject_done_time = timezone.now()
+#     application.status='Done'
+#     application.save()         
+#     return render(request,'jobs/my_jobs.html')
+
 def ApplicantProfileView(request,username):
     # application=get_object_or_404(Application,application_uuid=application_uuid)
     applicant=get_object_or_404(User,username=username)
     applications = Application.objects.filter(user_id=applicant,status='Done')
     # job_id=applications.job_id
     # jobs =Job.objects.filter(id=job_id)
+    # tt=User.objects.get(id=6)
+    # notify.send(tt,recipient=tt,verb='Message',description="Approved")
     return render(request,'profiles/applicant_profile.html',{'username':username,'applicant':applicant,'applications':applications })
 
+class AddReviewComplaintView(SuccessMessageMixin, LoginRequiredMixin,CreateView):
+    model =ComplaintsReview
+    form_class=ComplaintReviewForm
+    template_name ='applications/done_job.html'
+    success_message= 'Review Or Complaint Successful !'
+    
+   
+    
+    def form_valid(self,form):             
+        application =form.save(commit=False)
+        application.user = self.request.user  
+        application.application_id =self.kwargs['application_id']
+        # application.job = job.job_id
+        application.save()
+        # application.save_m2m()
+        return super(AddReviewComplaintView,self).form_valid(form)

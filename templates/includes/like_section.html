@@ -1,0 +1,16 @@
+            
+      <form action="{% url 'likes' %}" method = "POST" >
+        {% csrf_token%}
+        {% comment %} {% if user.is_authenticated %} {% endcomment %}
+        {% comment %} {% if liked %} {% endcomment %}
+        {% comment %} <button type="submit" name="blog_slug" value ="{{blog.slug}}" class="btn btn-sm "> <i class="bi bi-heart text-danger"> {{ total_likes }}</i> </button> {% endcomment %}
+        <button type="submit" name="blog_slug"  id="lke" value ="{{blog.slug}}" class="btn btn-sm "> <i class="bi bi-heart text-success"> {% if total_likes %} {{ total_likes }} {% endif %}</i> </button>
+ 
+       {% comment %} {% else %} {% endcomment %}
+        {% comment %} <button type="submit" name="blog_slug" value ="{{blog.slug}}" class="btn btn-sm "><i class="bi bi-heart text-success"> </i> </button> {% endcomment %}
+            {% comment %} {% endif%} {% endcomment %}
+            
+         
+            {% comment %} {% endif %} {% endcomment %}
+            
+            </form> 

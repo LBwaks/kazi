@@ -3,6 +3,7 @@ from formtools.wizard.views import SessionWizardView
 # from formtools.wizard.views import WizardView
 from .forms import PersonalForm, LocationForm, SeekerForm,DocumentsForm,EditAccountForm,EditProfileForm
 from .models import Personal
+from jobs.models import Job
 from django.core.files.storage import FileSystemStorage
 from django.views.generic import DetailView ,CreateView
 from allauth.account.views import PasswordChangeView
@@ -45,7 +46,9 @@ class MyProfileView(LoginRequiredMixin,DetailView):
     def get_context_data(self, **kwargs):
         context = super(MyProfileView,self).get_context_data(**kwargs)
         my_profile = get_object_or_404(Personal,profile_uuid=self.kwargs['profile_uuid'])
+        my_jobs=Job.objects.filter(user= self.request.user)
         context["my_profile"] = my_profile 
+        context['my_jobs']=my_jobs
         return context
     
 class EditProfileView(UpdateView):

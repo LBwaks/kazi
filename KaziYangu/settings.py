@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.sitemaps',
     'django.contrib.humanize',
 
     'jobs',
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     'profiles',
     'blogs',
     'pages',
+    
 
     'allauth',
     'allauth.account',
@@ -63,6 +65,9 @@ INSTALLED_APPS = [
     'django_filters',
     'django.contrib.postgres',
     'django_celery_results',
+    'xhtml2pdf',
+    'star_ratings',
+    # 'notifications',
 ]
 
 PHONENUMBER_DB_FORMAT = 'NATIONAL'
@@ -172,6 +177,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                # 'django.core.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],

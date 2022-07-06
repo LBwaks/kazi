@@ -18,15 +18,13 @@
         <div class="d-flex justify-content-between align-items-center">
           <h2></h2>
           <ol>
-            {% comment %} <li><a href="index.html">Home</a></li> {% endcomment %}
-             {% comment %} <li><a href="index.html">Jobs</a></li> {% endcomment %}
-            {% comment %} <li>Job Applications</li> {% endcomment %}
-            {% if q %}
-<p> {% with query.count as total_results %} 
+        
+             {% if title %}
+<p> {% with results.count as total_results %} 
 <span class="text-danger">{{total_results}} </span>Job{{total_results|pluralize}} Found 
 {% endwith%}
 </p>
-{% endif%}
+{% endif%} 
           </ol>
         </div>
 
@@ -42,7 +40,25 @@
 
           <div class="col-lg-10 mx-auto">
           <div class="row d-flex align-items-stretch">
-          <h4 class="mb-2"> <u> Search Results For <span class="text-danger">{{q}}</span> </u> </h4>
+          <h4 class="mb-2"> <u> Search Results For: {% if title and location and tag %}
+             Title: <span class="text-danger">{{title }} </span>
+            Location:
+            <span class="text-danger"> {{location}}  </span>
+            Tag:
+            <span class="text-danger">  {{tag}} </span>
+{%elif title %}
+<span class="text-danger">{{title}} </span> 
+             {% elif location %}
+              <span class="text-danger">{{location}} </span> 
+              {% else %}
+              {% if not  tag  %}
+              {%else %}
+             <span class="text-danger"> {{tag}} </span>
+             {% endif %}
+             {% endif %} 
+            {%if q %}
+            <span class="text-danger">   {{q}}</span>
+        {% endif %}</u> </h4>
  {% for job in results %}
  
  <div class="col-md-6 col-lg-6 col-xl-6 col-sm-12">

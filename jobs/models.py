@@ -1,3 +1,5 @@
+from msilib.schema import LockPermissions
+from turtle import title
 from django.db import models
 from autoslug import AutoSlugField
 from django.conf import settings
@@ -9,6 +11,9 @@ from PIL import Image
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.contrib.postgres.indexes import GinIndex
+from pkg_resources import to_filename
+from django.template.defaultfilters import slugify
+from prompt_toolkit import application
 
 class Category(models.Model):
     user=models.ForeignKey(settings.AUTH_USER_MODEL,editable=False,on_delete=models.CASCADE,null=False)
@@ -20,6 +25,10 @@ class Category(models.Model):
         return self.name
     def get_absolute_url(self):
         return reverse("tags",kwargs={'slug':self.slug})
+
+    def save(self,*args, **kwargs):
+        self.slug= slugify(self.name)
+        return super(Category,self).save(*args, **kwargs)
 
     # def get_absolute_url(self):
     #     return reverse("artist_category",kwargs={'slug':self.slug})
@@ -35,6 +44,9 @@ class Tag(models.Model):
         return self.name
     def get_absolute_url(self):
         return reverse("tags",kwargs={'slug':self.slug})
+    def save(self,*args, **kwargs):
+        self.slug= slugify(self.name)
+        return super(Tag,self).save(*args, **kwargs)
 
 # Create your models here.
 class Job(models.Model):
@@ -170,6 +182,9 @@ class Job(models.Model):
     def photo_url(self):
         if self.image and hasattr(self.image, 'url'):
             return self.image.url 
+    def save(self,*args, **kwargs):
+        self.slug= slugify(self.title)
+        return super(Job,self).save(*args, **kwargs)
     @property 
     def video_url(self):
         if self.video and hasattr(self.video, 'url'):
@@ -185,7 +200,17 @@ class JobImage(models.Model):
     def photo_url(self):
         if self.image and hasattr(self.image, 'url'):
             return self.image.url 
-
+            
+    # def __str__(self) -> str:
+    #     return super(self.job.title + 'image').__str__()
 
     
 
+# class Invoice(models.Model):
+#     invoice id
+#     invoice date
+#     invoice due
+#     invoice status
+#     invoice to_
+#     invoice job title
+#     invoice application charge

@@ -1,4 +1,5 @@
 {% load static %}
+
 <header id="header" class="fixed-top d-flex align-items-center ">
     <div class="container d-flex justify-content-between align-items-center">
 
@@ -21,6 +22,11 @@
           <li><a href="team.html">Team</a></li> {% endcomment %}
           <li><a  class="{% if url_name == 'blogs' %}active{% endif %}" href="{% url 'blogs' %}">Blog</a></li>
           {% if user.is_authenticated %}
+          {% comment %} start of notification {% endcomment %}
+
+          
+
+          {% comment %} end of notification {% endcomment %}
           <li class="dropdown "><a href="#"><span> {{user.username}}</span> <i class="bi bi-chevron-down"></i></a>
             <ul> 
             {% if user.personal.user_type == 'recruiter' %}

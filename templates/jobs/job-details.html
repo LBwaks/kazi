@@ -35,7 +35,7 @@
 
     <section id="blog" class="blog">
       <div class="container" data-aos="fade-up">
-{{job.id}} lllllllllllllllll
+
         <div class="row">
 
           <div class="col-lg-8 entries">
@@ -54,8 +54,15 @@
                 <ul>
                   <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a href="{% url 'jobs_by' job.user.username %}">{{job.user.username}}</a></li>
                   <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a><time>{{job.created_date }}</time></a></li>
-                  <li class="d-flex align-items-center">  <a href="{% url 'this_job_applications' job.slug %}"><span class="badge rounded-pill bg-info text-dark"> {{job.applications.count}}</span>  Applications</a></li>
-                </ul>
+                  <li class="d-flex align-items-center"> 
+                  {%if job.status == 'Approved' %}
+                  <i class="bi bi-check-circle-fill"> </i> <a>Approved  </a>
+                  {% elif job.status == 'Done' %}
+                  <i class="bi bi-check-circle-fill"> </i> <a>Done </a>
+                  {% else %}
+                    <a href="{% url 'this_job_applications' job.slug %}"><span class="badge rounded-pill bg-info text-dark"> {{job.applications.count}}</span>  Applications</a></li>
+                  {% endif %}
+                              </ul>
               </div>
 
               <div class="entry-content">

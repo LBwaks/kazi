@@ -25,6 +25,7 @@
   <link href="{% static 'plugins/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
   <link href="{% static 'plugins/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
   <link href="{% static 'plugins/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+  <link href="{% static 'star-ratings/css/star-ratings.css' %}" rel="stylesheet">
 
   <!-- Template Main CSS File -->
   <link href="{% static 'css/style.css' %}?{% now "U" %}" rel="stylesheet">
@@ -59,10 +60,22 @@
   <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'plugins/glightbox/js/glightbox.min.js' %}"></script>
   <script src="{% static 'plugins/isotope-layout/isotope.pkgd.min.js' %}"></script>
-
+  <script src="{% static 'star-ratings/js/dist/star-ratings.min.js' %}"></script>
   <script src="{% static 'plugins/purecounter/purecounter.js' %}"></script>
   <script src="{% static 'plugins/swiper/swiper-bundle.min.js' %}"></script>
   <script src="{% static 'plugins/waypoints/noframework.waypoints.js' %}"></script>
+  <script src="{% static 'plugins/choices/choices.js'%}"></script>
+   <script>
+      const choices = new Choices('[data-trigger]',
+      {
+        searchEnabled: false,
+        itemSelectText: '',
+      });
+
+    </script>
+
+  <script src="{% static 'plugins/anime-master/anime.min.js' %}"></script>
+
   <!-- Template Main JS File -->
   <script src="{% static 'js/main.js' %}"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>

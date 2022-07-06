@@ -3,6 +3,7 @@
 {% block content %}
 {% load humanize %}
 {% load static %}
+
 <main id="main">
   <br>
   <section class="breadcrumbs">
@@ -97,6 +98,16 @@
 
   </div>
 </div>
+{% if user.personal.user_type == 'recruiter'  %}
+  <div class="card  mb-3">
+  <div class="card-body">
+
+<p> <span class="fw-bold"> Jobs Posted:</span> <span class="text-muted fw-lighter"> <span class="badge rounded-pill bg-info"><a class="text-white" href="{% url 'my_jobs' %}">{{ my_jobs.count }}  </a></li></span> </span></p>
+
+  </div>
+</div>
+{% endif %}
+
   {% if user.personal.user_type == 'seeker'  %}
   <div class="card  mb-3">
   <div class="card-body">

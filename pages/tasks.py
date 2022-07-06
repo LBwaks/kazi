@@ -8,9 +8,9 @@
 # # background: -webkit-linear-gradient(to bottom, #E684AE, #79CBCA, #77A1D3);  /* Chrome 10-25, Safari 5.1-6 */
 # # background: linear-gradient(to bottom, #E684AE, #79CBCA, #77A1D3); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 # #  for home 
-# #  background: #C9FFBF;  /* fallback for old browsers */
-# # background: -webkit-linear-gradient(to left, #FFAFBD, #C9FFBF);  /* Chrome 10-25, Safari 5.1-6 */
-# # background: linear-gradient(to left, #FFAFBD, #C9FFBF); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+#  background: #C9FFBF;  /* fallback for old browsers */
+# background: -webkit-linear-gradient(to left, #FFAFBD, #C9FFBF);  /* Chrome 10-25, Safari 5.1-6 */
+# background: linear-gradient(to left, #FFAFBD, #C9FFBF); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 # # /////////////
 # # background-image: linear-gradient(to top, #d9afd9 0%, #97d9e1 100%);
 # # background-image: linear-gradient(to top, #fbc2eb 0%, #a6c1ee 100%);

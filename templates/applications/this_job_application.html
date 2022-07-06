@@ -10,6 +10,7 @@
 
     <!-- ======= Jobs  breadcrumbs Section ======= -->
 <br> 
+
     <section class="breadcrumbs">
     
       <div class="container">
@@ -24,7 +25,10 @@
         </div>
 
       </div>
+    
+       
     </section><!-- Job breadcrumbs Section -->
+
     <section id="blog" class="blog">
       <div class="container-fluid" data-aos="fade-up">
 
@@ -89,19 +93,25 @@
     </div>
      {% elif this_job_applications.status == 'Done' %}
      <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-    <button class= "btn btn-outline-dark">Done Job</button> 
+    <a  href="{% url 'done-page' this_job_applications.application_uuid %}" class="btn btn-outline-dark">Get Invoice</a > 
   
     <a href="{% url 'applicant' this_job_applications.user.username %}" class="btn btn-outline-secondary">Applicant Profile </a>
   </div>
     {% elif this_job_applications.status == 'Approved' %}
     <div class="d-grid gap-2 d-md-flex justify-content-md-between">
     <a href="{% url 'cancel_job' this_job_applications.application_uuid %}" class="btn btn-outline-warning">Cancel Approval </a> 
-     <a href="{% url 'done_job' this_job_applications.application_uuid %}" class="btn btn-outline-primary">Confirm Job Done </a>
+     <a href="{% url 'done' this_job_applications.application_uuid %}" class="btn btn-outline-primary">Confirm Job Done </a>
         <a href="{% url 'applicant' this_job_applications.user.username %}" class="btn btn-outline-secondary">Applicant Profile </a>
      </div>
     {% elif this_job_applications.status == 'Pending' %}
     <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+       {% if not job_has_approved_application %} 
+       {%if not job_has_done_status %}
      <a href="{% url 'approve' this_job_applications.application_uuid %}" class="btn btn-outline-info">Approve Application </a>
+    {% endif %}
+     {% else %}
+     <a  class="btn btn-outline-info">Job Has Approved Application </a>
+     {% endif %} 
      <a href="{% url 'applicant' this_job_applications.user.username %} " class="btn btn-outline-secondary">Applicant Profile </a>
      </div>
      {%endif%}

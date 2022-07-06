@@ -22,3 +22,17 @@ class Application(models.Model):
 
     def get_absolute_url(self):
         return reverse('jobs')
+
+class ComplaintsReview(models.Model):
+    user = models.ForeignKey(User,related_name='reviews',on_delete=models.CASCADE)
+    application  = models.ForeignKey(Application,related_name="applicant_review",on_delete=models.CASCADE)   
+    review = RichTextField(blank=True,null=True)
+    slug = models.SlugField(max_length=200)
+    complaints =RichTextField(blank=True,null=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def get_absolute_url(self):
+        # return reverse("done-page", kwargs={"application_id": self.application_id})
+        return reverse("jobs")
+
+    # # application_uuid>/done44444444444',get_done_page,name=''),

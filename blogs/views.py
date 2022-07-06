@@ -1,13 +1,14 @@
+from ast import Return
 from django.http.response import HttpResponseRedirect
-# from .forms import CommentForm
+from .forms import CommentForm
 from django.shortcuts import render
-from django.views.generic.detail import DetailView
+from django.views.generic.detail import DetailView,View
 from django.views.generic.edit import UpdateView
-from .models import Blog,Tag
+from .models import Blog,Tag,Blog_Comment
 from .forms import BlogForm,EditBlogForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView,CreateView,DeleteView
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import render,get_object_or_404,redirect
 from django.core.paginator import EmptyPage,PageNotAnInteger,Paginator
 from django.urls.base import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
@@ -24,46 +25,46 @@ class BlogDetailView(DetailView):
     template_name = 'blogs/blog-details.html'
 
     def get_related_blogs_by_tags(self):
-        return Blog.objects.filter(tag_slug=self.tag_slug).exclude(slug=self.slug)
+        return Blog.objects.filter(tag_slug=self.tag_slug).order_by('-created_date').exclude(slug=self.slug)
         
-    # def get_context_data(self,*args,**kwargs):
-    #     context =super(BlogDetailView,self).get_context_data(**kwargs)
+    def get_context_data(self,*args,**kwargs):
+        context =super(BlogDetailView,self).get_context_data(**kwargs)
        
-    # #    for like unlike
-    #     blogs_to_like = get_object_or_404(Blog,slug=self.kwargs['slug'])
-    #     total_likes = blogs_to_like.total_likes()
-    #     liked=False
-    #     if blogs_to_like.likes.filter(id=self.request.user.id).exists():
-    #         like=False
+    #    for like unlike
+        blogs_to_like = get_object_or_404(Blog,slug=self.kwargs['slug'])
+        total_likes = blogs_to_like.total_likes()
+        liked=False
+        if blogs_to_like.likes.filter(id=self.request.user.id).exists():
+            like=False
+    
+        #  for commenting 
+        blog_to_comment =get_object_or_404(Blog,slug=self.kwargs['slug'])
+        form= CommentForm()
+        comments=Blog_Comment.objects.filter(blog=blog_to_comment).order_by('-created_date',)
 
-    #     #  for commenting 
-    #     blog_to_comment =get_object_or_404(Blog,slug=self.kwargs['slug'])
-    #     form= CommentForm()
-    #     comments=Blog_Comment.objects.filter(blog=blog_to_comment).order_by('-created_date',)
+        context['total_likes']=total_likes
+        context['liked']=liked
+        context['form']=form
+        context['blog_to_comment']=blog_to_comment
+        context['comments']=comments
+        return context
 
-    #     context['total_likes']=total_likes
-    #     context['liked']=liked
-    #     context['form']=form
-    #     context['blog_to_comment']=blog_to_comment
-    #     context['comments']=comments
-    #     return context
+    @method_decorator(login_required)
+    def post(self,request,slug,**kwargs):
+        blog = get_object_or_404(Blog,slug=slug)
+        new_comment =None
+        form=CommentForm(request.POST)
 
-    # @method_decorator(login_required)
-    # def post(self,request,slug,**kwargs):
-    #     blog = get_object_or_404(Blog,slug=slug)
-    #     new_comment =None
-    #     form=CommentForm(request.POST)
+        if form.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.user=request.user
+            new_comment.blog=blog
+            new_comment.save()
 
-    #     if form.is_valid():
-    #         new_comment = form.save(commit=False)
-    #         new_comment.user=request.user
-    #         new_comment.blog=blog
-    #         new_comment.save()
-
-    #     comments=Blog_Comment.objects.filter(blog =blog).order_by('-created_date')
-    #     context={'blog':blog,'form':form,'comments':comments
-    #     }
-    #     return render (request,'blogs/blog_detail.html',context)
+        comments=Blog_Comment.objects.filter(blog =blog).order_by('-created_date')
+        context={'blog':blog,'form':form,'comments':comments
+        }
+        return render (request,'blogs/blog-details.html',context)
 
 class AddBlogView(LoginRequiredMixin,CreateView):
     model = Blog
@@ -89,6 +90,19 @@ class DeleteBlogView(LoginRequiredMixin,DeleteView):
      template_name ='blogs/delete-blog.html'
      success_url= reverse_lazy('blogs')
 
+class CommentReplyView(LoginRequiredMixin,View):
+    def post(self,request,slug,blog_slug,*args,**kwargs):
+        blog=Blog.objects.get(slug=blog_slug)
+        parent_comment=Blog_Comment.get(slug=slug)
+        form = CommentForm(request.POST)        
+        if form.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.user=request.user
+            new_comment.blog=blog
+            new_comment.parent=parent_comment
+            new_comment.save()
+    
+        return redirect('blog-details',slug=blog_slug)
 
 def TagView(request,slug):
     tag_blog=get_object_or_404(Tag,slug=slug)
@@ -104,14 +118,16 @@ def TagView(request,slug):
    
     return render(request,'Tags/blog_tags.html',{'slug':slug,'tag_blog':tag_blog,'blogs':blogs})
 
-# @login_required
-# def LikeView(request,slug):
-#     blog=get_object_or_404(Blog,slug=request.POST.get('blog_slug'))
-#     liked=False
-#     if blog.likes.filter(id=request.user.id).exists():
-#         blog.likes.remove(request.user)
-#         liked=False
-#     else:
-#         blog.likes.add(request.user)
-#         liked=True
-#     return HttpResponseRedirect(reverse('blog_detail',args=[str(slug)]))
+@login_required
+def LikeView(request,slug):
+    blog=get_object_or_404(Blog,slug=request.POST.get('blog_slug'))
+    liked=False
+    if blog.likes.filter(id=request.user.id).exists():
+        blog.likes.remove(request.user)
+        liked=False
+    else:
+        blog.likes.add(request.user)
+        liked=True
+    return HttpResponseRedirect(reverse('blog_detail',args=[str(slug)]))
+    # url = blog.get_absolute_url()
+    # return HttpResponseRedirect(url)

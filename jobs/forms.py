@@ -12,6 +12,12 @@ from django.conf import settings
 from jobs import validators
 class JobForm(forms.ModelForm):
     # image = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    job_images= forms.FileField(required=True,widget=forms.FileInput(attrs={
+        'required'
+        'class':'form-control images',
+        'multiple' : True 
+        
+    }))
     class Meta:
         model =Job
         fields =('title','tag','description',
@@ -19,8 +25,9 @@ class JobForm(forms.ModelForm):
         'county',
         'location',
         'address',
-        'image',
-        'video')      
+        # 'image',
+        # 'video'
+        )      
 
         labels ={
             'title':'Job Title ',
@@ -29,10 +36,10 @@ class JobForm(forms.ModelForm):
             'application_deadline': 'Application Deadline ',
             'job_done_date': 'Job To Be Done At ',
             'county': 'County ',
-            'address': 'Address ',
-            'location': 'Location ',
-            'image': 'Job Image ',
-            'video':'Job Video ',
+            'address': 'Estate',
+            'location': 'Town/City',
+            'job_images': 'Job Image ',
+            # 'video':'Job Video ',
         }
 
         widgets = {
@@ -44,9 +51,10 @@ class JobForm(forms.ModelForm):
             'county': forms.Select(attrs={'class':'form-select county ' 'required'}),
             'location': forms.TextInput(attrs={'class':'form-control location ' 'required'}),
             'address': forms.TextInput(attrs={'class':'form-control address ' 'required'}),
-            'image': forms.ClearableFileInput(attrs={'class':'form-control image ','multiple':True}),
-            'video':forms.FileInput(attrs={'class':'form-control video '}),
+            # 'image': forms.ClearableFileInput(attrs={'class':'form-control image ','multiple':True}),
+            # 'video':forms.FileInput(attrs={'class':'form-control video '}),
         }
+        
 
         # def clean_title(self):
         #     data = self.cleaned_data["title"]
@@ -93,13 +101,13 @@ class JobForm(forms.ModelForm):
 
 
     def clean_image(self):
-        image = self.cleaned_data.get('image', False)
-        if image == 'jobs/job_images/jobs.jpg':
+        job_images = self.cleaned_data.get('image', False)
+        if job_images == 'jobs/job_images/jobs.jpg':
             pass
-        elif image:
-            if image.size > 5*1024*1024:
+        elif job_images:
+            if job_images.size > 5*1024*1024:
                 raise ValidationError("Image file too large ( > 4mb )")
-            return image
+            return job_images
         else:
             raise ValidationError("Couldn't read uploaded image")
             
@@ -116,26 +124,13 @@ class JobForm(forms.ModelForm):
             return video   
 
 
-
-class JobImageForm(forms.ModelForm):
-    class Meta :
-        model = JobImage
-        # fields= ('image',)
-        exclude =()
-
-        labels ={
-            'image': 'Job Image ',
-        }
-
-        widgets = {
-            'image': forms.FileInput(attrs={'class':'form-control'})
-        }
-
-JobImageFormSet = inlineformset_factory(
-    Job ,JobImage, form=JobImageForm,
-    fields=['image'],extra=3,can_delete=True
-)
 class JobEditForm(forms.ModelForm):
+    job_images= forms.FileField(required=True,widget=forms.FileInput(attrs={
+        'required'
+        'class':'form-control images',
+        'multiple' : True 
+        
+    }))
     class Meta:
         model =Job
         fields =('title','tag','description',
@@ -143,7 +138,8 @@ class JobEditForm(forms.ModelForm):
         'county',
         'location',
         'address',
-        'image','video')
+        # 'image','video'
+        )
 
         labels ={
             'title':'Job Title ',
@@ -154,8 +150,8 @@ class JobEditForm(forms.ModelForm):
             'county': 'County ',
             'location': 'Location ',            
             'address': 'Address ',
-            'image': 'Job Image ',
-            'video':'Job Video ',
+            'job_images': 'Job Image ',
+            # 'video':'Job Video ',
         }
 
         widgets = {
@@ -167,8 +163,8 @@ class JobEditForm(forms.ModelForm):
             'county': forms.Select(attrs={'class':'form-select county ' 'required'}),
             'location': forms.TextInput(attrs={'class':'form-control location ' 'required'}),
             'address': forms.TextInput(attrs={'class':'form-control address ' 'required'}),
-            'image': forms.FileInput(attrs={'class':'form-control image ','multiple':True}),
-            'video':forms.FileInput(attrs={'class':'form-control video '}),
+            # 'image': forms.FileInput(attrs={'class':'form-control image ','multiple':True}),
+            # 'video':forms.FileInput(attrs={'class':'form-control video '}),
        }
     def clean(self):
             cleaned_data = super(JobEditForm, self).clean()
@@ -200,13 +196,13 @@ class JobEditForm(forms.ModelForm):
             return self.cleaned_data
 
     def clean_image(self):
-        image = self.cleaned_data.get('image', False)
-        if image == 'jobs/job_images/jobs.jpg':
+        job_images = self.cleaned_data.get('image', False)
+        if job_images == 'jobs/job_images/jobs.jpg':
             pass
-        elif image:
-            if image.size > 5*1024*1024:
+        elif job_images:
+            if job_images.size > 5*1024*1024:
                 raise ValidationError("Image file too large ( > 5mb )")
-            return image
+            return job_images
         else:
             raise ValidationError("Couldn't read uploaded image")
             

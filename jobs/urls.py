@@ -1,9 +1,9 @@
 from django.urls import path
 from .import views
 # from django_filters.views import FilterView
-from .views import DeleteJobView, JobDetailView,UserView ,JobView, AddJobView,cancel,done_job,approve_application,UpdateJobView,JobApplicationView,JobApplicationsView,MyJobsView,TagView,pdf,get_done_page
+from .views import DeleteJobView, JobDetailView,UserView ,JobView, AddJobView,cancel,done_job,approve_application,UpdateJobView,JobApplicationsView,JobApplicationsView,MyJobsView,TagView,pdf,get_done_page
 
-12
+
 urlpatterns = [
     path('',JobView.as_view(), name="jobs"),
     path('my_jobs',MyJobsView.as_view(),name='my_jobs'),

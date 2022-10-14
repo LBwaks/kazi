@@ -14,6 +14,7 @@ from django.contrib.postgres.indexes import GinIndex
 from pkg_resources import to_filename
 from django.template.defaultfilters import slugify
 from prompt_toolkit import application
+import random,string
 
 class Category(models.Model):
     user=models.ForeignKey(settings.AUTH_USER_MODEL,editable=False,on_delete=models.CASCADE,null=False)
@@ -47,6 +48,18 @@ class Tag(models.Model):
     def save(self,*args, **kwargs):
         self.slug= slugify(self.name)
         return super(Tag,self).save(*args, **kwargs)
+
+def random_string_generator(size=10,chars=string.ascii_lowercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+def unique_job_id_generator(instance):
+    
+    new_job_id =random_string_generator().upper()
+    Klass = instance.__class__
+    qs_exists =Klass.objects.filter(job_id =new_job_id).exists()
+    if qs_exists:
+        return unique_job_id_generator(instance)
+    return new_job_id
 
 # Create your models here.
 class Job(models.Model):
@@ -148,6 +161,7 @@ class Job(models.Model):
         (Nairobi, 'Nairobi'),
     ]
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=False)
+    job_id = models.CharField(blank=True,max_length=30)
     title = models.CharField(max_length=250)
     slug = AutoSlugField(populate_from='title', unique=True)
     tag = models.ForeignKey(Tag,verbose_name="Tag",on_delete=models.CASCADE)
@@ -176,8 +190,10 @@ class Job(models.Model):
 
     def get_absolute_url(self):
         return reverse("job_details", kwargs={"slug": self.slug})
+        
     def get_related_job_by_tag(self):
         return Job.objects.filter(application_deadline__gte=datetime.datetime.now(),status='waiting',tag_id =self.tag_id).exclude(pk=self.pk).order_by('-created_date')[:8]
+   
     @property 
     def photo_url(self):
         if self.image and hasattr(self.image, 'url'):
@@ -189,6 +205,12 @@ class Job(models.Model):
     def video_url(self):
         if self.video and hasattr(self.video, 'url'):
             return self.video.url 
+
+def pre_save_job_id(sender,instance,*args,**kwargs):
+        if not instance.job_id:
+            instance.job_id = unique_job_id_generator(instance)
+pre_save.connect(pre_save_job_id,sender=Job)
+
 
    
     

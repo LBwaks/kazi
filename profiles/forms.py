@@ -139,17 +139,24 @@ class DocumentsForm(forms.ModelForm):
                 raise forms.ValidationError(_(u'File type is not supported'))
             return id_back  
 
-    def clean_cv(self):
-        # if cv != None:
-            cv = self.cleaned_data['cv']
-            content_type = cv.content_type.split('/')[0]
-            if content_type in settings.CONTENT_TYPES:
-                if cv.size > int(settings.MAX_IMAGE_UPLOAD_SIZE):
-                    raise forms.ValidationError(_(u'Please keep filesize under %s. Current filesize %s') % (filesizeformat(settings.MAX_IMAGE_UPLOAD_SIZE), filesizeformat(cv.size)))
-            else:
-                raise forms.ValidationError(_(u'File type is not supported'))
-            return cv          
+    # def clean_cv(self):
+    #     # if cv != None:
+    #         cv = self.cleaned_data['cv']
+    #         content_type = cv.content_type.split('/')[0]
+    #         if content_type in settings.CONTENT_TYPES:
+    #             if cv.size > int(settings.MAX_IMAGE_UPLOAD_SIZE):
+    #                 raise forms.ValidationError(_(u'Please keep filesize under %s. Current filesize %s') % (filesizeformat(settings.MAX_IMAGE_UPLOAD_SIZE), filesizeformat(cv.size)))
+    #         else:
+    #             raise forms.ValidationError(_(u'File type is not supported'))
+    #         return cv  
 
+    def clean_image(self):
+        cv = self.cleaned_data.get('cv', False)
+       
+        if cv.size > 5*1024*1024:
+                raise ValidationError("File too large ( > 5mb )")
+        return cv
+         
 class EditProfileForm(forms.ModelForm):
     class Meta :
         model = Personal 

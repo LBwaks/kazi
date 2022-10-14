@@ -14,7 +14,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic.edit import DeleteView
 from applications.models import Application
-from jobs.forms import JobForm ,JobEditForm, JobImageFormSet,JobSearchForm,JobImageForm
+from jobs.forms import JobForm ,JobEditForm, JobSearchForm
 from pages.forms import JobSearchForm
 from .models import Job,Tag,JobImage
 from django.contrib.auth.models import User
@@ -63,83 +63,35 @@ class AddJobView(SuccessMessageMixin,LoginRequiredMixin,CreateView):
     success_message ='Job Posted Successfully !'
 
 
-    # def post(self, request, *args, **kwargs):
-    #     if request.method == 'POST':
-    #      data =request.POST 
-    #      form = JobForm(request.POST, request.FILES)
-    #      files = request.FILES.getlist('image')
-    #      if data['tag']:
-    #          tag=Tag.objects.get(id=data['tag'])
-    #      if form.is_valid():
-    #         title = data['title'],
-    #         tag = tag,
-    #         description = data['description'],
-    #         application_deadline=data['application_deadline'],
-    #         job_done_date= data['job_done_date'],
-    #         county=data['county'],
-    #         location= data['location'],
-    #         address=data['address'],
-    #         image = f,
-    #         user_id= self.request.user.id,
-    #         video=data['video'],
-    #          for f in files:
-    #             job = Job.objects.create(job=jb,image=image
-           
-    #             )
-                 
-    #     else:
-    #      form = JobForm()
-    #     return redirect('job') 
-    # def post(self,*args,**kwargs):
-    #     # try:
-            
-    #         images=self.request.FILES.getlist('images')
-    #         job=Job.objects.get(slug=self.kwargs['slug'])
-    #         for image in images:
-    #             job_images=JobImage.objects.create(
-    #                 job=job,
-    #                 image=image
-    #             )
-            # return  HttpResponseRedirect('home')
-        # except Exception as e:
-        #     print(e)
   
 
-    def form_valid(self,form):        
+    def form_valid(self,form):
+        images =self.request.FILES.getlist('job_images')        
         job =form.save(commit=False)
-        form.instance.user = self.request.user
-        self.object =form.save()        
+        job.user = self.request.user
+        # self.object =form.save()        
         job.save()
-        form.save_m2m()
-        if form.save_m2m():
-            jb = form.save()
-            images =self.request.FILES.getlist('image')
-            for image in images:
-              JobImage.objects.create(job=jb,image=image)
+        
+        for image in images:
+              JobImage.objects.create(job=job,image=image)
         return super(AddJobView,self).form_valid(form)
     
-    # def form_valid(self,form):
-    #     jb = form.save()
-    #     images =self.request.FILES.getlist('image')
-    #     for image in images:
-    #         JobImage.create(job=jb,image=image)
-    #     return super(AddJobView,self).form_valid(form)    
-    # def form_valid(self,form):
-    #     context = self.get_context_data()
-    #     form_img = context['form_images']
-    #     with transaction.atomic():
-    #         form.instance.user = self.request.user
-    #         self.object = form.save()
-    #         if form_img.is_valid():
-    #             form_img.instance = self.object
-    #             form_img.save()
-    #     return super(AddJobView,self).form_valid(form)       
+          
 
 class UpdateJobView(SuccessMessageMixin,LoginRequiredMixin,UpdateView):
     model =Job 
     form_class=JobEditForm
     template_name ='jobs/update_job.html'
     success_message ='Job Edited Successfully !'
+
+    def form_valid(self,form):
+        images =self.request.FILES.getlist('job_images')        
+        job =form.save(commit=False)              
+        job.save()
+        
+        for image in images:
+              JobImage.objects.create(job=job,image=image)
+        return super(UpdateJobView,self).form_valid(form)
 
 class DeleteJobView(SuccessMessageMixin,LoginRequiredMixin,DeleteView):
     model= Job

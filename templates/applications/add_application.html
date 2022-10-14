@@ -34,7 +34,7 @@
           <div class="card shadow-lg  bg-body rounded">
           <div class="card-body">
        
-<form method="POST"  action="{% block action_url %} {% url 'apply_job' view.kwargs.job_id %} {% endblock action_url %} " enctype="multipart/form-data">
+<form method="POST"  ru enctype="multipart/form-data">
 {% csrf_token %}
 {{ myform.media }}
  {{ form|crispy}}

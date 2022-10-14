@@ -37,15 +37,7 @@
 
 
 <p class="text-center">Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
-{% comment %} {% if wizard.steps.step1 %}
-one 
-{% elif wizard.steps.step2 %}
-two 
-{% elif wizard.steps.step3 %}
-three
-{% elif wizard.steps.step4 %}
-four 
-{% endif%} {% endcomment %}
+
 <form action="" method="post" enctype="multipart/form-data" class="bg-white">
 {% csrf_token %}
 

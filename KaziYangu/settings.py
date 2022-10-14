@@ -75,7 +75,7 @@ PHONENUMBER_DEFAULT_REGION = 'KE'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
-CONTENT_TYPES = ['image', 'video']
+CONTENT_TYPES = ['image', 'video','docx',]
 # 2.5MB - 2621440
 # 5MB - 5242880
 # 10MB - 10485760
@@ -141,14 +141,7 @@ DEFAULT_FROM_EMAIL='webmaster@localhost'
 
 # Custom setting. To email
 RECIPIENT_ADDRESS = env('RECIPIENT_ADDRESS')
-# MESSAGE_TAGS = {
-#         messages.DEBUG: 'alert-secondary',
-#         messages.INFO: 'alert-info',
-#         messages.SUCCESS: 'alert-success',
-#         messages.WARNING: 'alert-warning',
-#         messages.ERROR: 'alert-danger',
-#  }
-#celery settings
+
 CELERY_TIMEZONE = "Africa/Nairobi"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
@@ -247,7 +240,7 @@ USE_TZ = True
 import os.path
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR / 'staticfiles')
-STATICFILES_DIRS =[
+STATICFILES_DIRS  =[
      os.path.join(BASE_DIR, 'static'),]
 
 #media settings
